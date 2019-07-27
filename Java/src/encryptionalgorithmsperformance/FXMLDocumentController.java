@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
@@ -35,6 +36,8 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private PieChart pieChart;
     
+    @FXML
+    private ComboBox cmbAlgorithm,cmbKeySize,cmbSimulation;
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -64,8 +67,14 @@ public class FXMLDocumentController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        cmbAlgorithm.getItems().removeAll(cmbAlgorithm.getItems());
+        cmbAlgorithm.getItems().addAll("AES", "DES", "RSA");
         
+        cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
+        cmbKeySize.getItems().addAll("64", "128", "256");
+        
+        cmbSimulation.getItems().removeAll(cmbSimulation.getItems());
+        cmbSimulation.getItems().addAll("64", "128", "256");
     }    
     
 }
