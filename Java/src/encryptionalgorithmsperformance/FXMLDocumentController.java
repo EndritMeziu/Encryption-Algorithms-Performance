@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
@@ -47,6 +51,8 @@ public class FXMLDocumentController implements Initializable {
     
     byte[] IV;
     SecretKey key;
+    PublicKey publicKey;
+    PrivateKey privateKey;
     File encrypted;
     File decrypted;
     double encryptionSum;
@@ -57,12 +63,14 @@ public class FXMLDocumentController implements Initializable {
     
     boolean onceaes = true;
     boolean oncedes = true;
+    boolean oncersa = true;
     ArrayList<String> encryptionTime = new ArrayList<String>(); 
     ArrayList<String> decryptionTime = new ArrayList<String>(); 
     ArrayList<String> encryptionLoad = new ArrayList<String>(); 
     ArrayList<String> decryptionLoad = new ArrayList<String>();
     XYChart.Series series1;
     XYChart.Series series;
+    XYChart.Series series2;
     CategoryAxis xAxis = new CategoryAxis();
     NumberAxis yAxis = new NumberAxis();
     
@@ -114,7 +122,21 @@ public class FXMLDocumentController implements Initializable {
         cmbFile.getItems().addAll("1Kb", "10Kb", "100Kb","1000Kb");
         
         cmbAlgorithm.getItems().removeAll(cmbAlgorithm.getItems());
-        cmbAlgorithm.getItems().addAll("AES", "DES", "RSA","");
+        cmbAlgorithm.getItems().addAll("AES", "DES", "Blowfish","");
+        
+        series = new XYChart.Series();
+        series.setName("DES");
+        
+        series1 = new XYChart.Series();
+        series1.setName("AES");
+        
+        series2 = new XYChart.Series();
+        series2.setName("Blowfish");
+        
+    
+        barChart.getData().add(series1);
+        barChart.getData().add(series);
+        barChart.getData().add(series2);
        
         
         
@@ -294,15 +316,15 @@ public class FXMLDocumentController implements Initializable {
         pieChart.setAnimated(true);
         pieChart.setData(pieChartData);
         
-        if(onceaes){
-            series1 = new XYChart.Series();
-            series1.getData().clear();
-            series1.setName("AES");
+        if(onceaes == true){
+            
             onceaes = false;
+            System.out.println("hyri");
         }
         yAxis.setLabel("Time (µs)");
+        
         series1.getData().add(new XYChart.Data<>("",round(encTime,2)));
-        barChart.getData().add(series1);
+        
        
         
         }
@@ -379,16 +401,97 @@ public class FXMLDocumentController implements Initializable {
         
       
         if(oncedes){
-            series = new XYChart.Series();
-            series.getData().clear();
-            series.setName("DES");
+            
             oncedes = false;
-        }yAxis.setLabel("Time (µs)");
+        }
+        yAxis.setLabel("Time (µs)");
         
+
         series.getData().add(new XYChart.Data<>("",round(encTime,2)));
-        barChart.getData().add(series);
       
         }
+        else if(AlgorithmModel == "Blowfish")
+        {
+            encryptionSum = 0;
+            decryptionSum = 0;
+            encLoadSum = 0;
+            decLoadSum = 0;
+            System.out.println("ne unaze");
+             
+
+            long startTime = System.nanoTime();
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");
+            
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(32);
+            }
+            System.out.print(cmbKeySize.getValue());
+            keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
+            
+            key = keyGenerator.generateKey();
+
+          
+            long endTime = System.nanoTime();
+            keyGeneration = (endTime - startTime)/(double)1000;
+            
+            for(int i=0;i<40;i++) 
+            {
+                encrypted = BlowfishEncryptFile();
+                decrypted = BlowfishDecryptFile();
+                encryptionTime.add(String.valueOf(Blowfish.encryptionTime));
+                decryptionTime.add(String.valueOf(Blowfish.decryptionTime));
+                
+                encryptionLoad.add(String.valueOf(Blowfish.encryptionCpuLoad));
+                decryptionLoad.add(String.valueOf(Blowfish.decryptionCpuLoad));
+            }
+            
+            for(int j=1;j<encryptionTime.size();j++)
+            {
+                encryptionSum += Double.parseDouble(encryptionTime.get(j));
+                decryptionSum += Double.parseDouble(decryptionTime.get(j));
+                encLoadSum += Double.parseDouble(encryptionLoad.get(j));
+                decLoadSum += Double.parseDouble(decryptionLoad.get(j));
+
+            }
+            
+            encTime = (float) (encryptionSum/encryptionTime.size()-1);
+            decTime = (float) (decryptionSum/encryptionTime.size()-1);
+            encLoad = (float) encLoadSum;
+            decLoad = (float) decLoadSum;
+            
+            
+            ObservableList<PieChart.Data> pieChartData = 
+                FXCollections.observableArrayList(
+                    new PieChart.Data("Generate Key", round(keyGeneration,2)),
+                    new PieChart.Data("EncryptTime", round(encTime,2)),
+                    new PieChart.Data("DecrypTime", round(decTime,2)),
+                    new PieChart.Data("EncrypLoad", round(encLoad,2)),
+                    new PieChart.Data("DecryptLoad", round(decLoad,2)));
+            
+            
+            
+            pieChartData.forEach(data ->
+                data.nameProperty().bind(
+                        Bindings.concat(
+                                data.getName(), " ", data.pieValueProperty(), " µs"
+                        )
+                )
+        );
+        pieChart.setLabelsVisible(false);
+        pieChart.setLegendSide(Side.BOTTOM);
+        
+        pieChart.setAnimated(true);
+        pieChart.setData(pieChartData);
+        
+      
+        
+        yAxis.setLabel("Time (µs)");
+        
+
+        series2.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        }
+        
         
     }
 
@@ -406,6 +509,12 @@ public class FXMLDocumentController implements Initializable {
             cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
             cmbKeySize.getItems().addAll("128", "192", "256");
         }
+        else if(AlgorithmModel == "Blowfish")
+        {
+            cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
+            cmbKeySize.getItems().addAll("32", "128", "256","448");
+        }
+       
         
     }
     
@@ -441,6 +550,24 @@ public class FXMLDocumentController implements Initializable {
         return outputFile;
 
     }
+    
+    private File BlowfishEncryptFile()
+    {
+        File intputFile = new File("textfile.txt");
+        File outputFile = new File("encryptedfile.txt");
+        Blowfish.encrypt(intputFile, outputFile, key);
+        return outputFile;
+    }
+    private File BlowfishDecryptFile()
+    {
+        File intputFile = new File("encryptedfile.txt");
+        File outputFile = new File("decryptedfile.txt"); 
+        Blowfish.decrypt(intputFile, outputFile, key);
+        return outputFile;
+
+    }
+    
+    
 
     private double round(double value,int places) {
         if (places < 0) throw new IllegalArgumentException();
