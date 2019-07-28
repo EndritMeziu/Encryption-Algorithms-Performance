@@ -78,7 +78,7 @@
                         <DropShadow height="14.0" radius="4.5" width="14.0" />
                      </effect>
                      <children>
-                        <BarChart fx:id="barChart" layoutY="45.0" prefHeight="354.0" prefWidth="395.0">
+                        <BarChart fx:id="barChart" layoutY="50.0" prefHeight="335.0" prefWidth="395.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>

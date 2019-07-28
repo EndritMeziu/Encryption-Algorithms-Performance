@@ -55,15 +55,17 @@ public class FXMLDocumentController implements Initializable {
     double decLoadSum;
     double keyGeneration;
     
-    boolean once = true;
-    
+    boolean onceaes = true;
+    boolean oncedes = true;
     ArrayList<String> encryptionTime = new ArrayList<String>(); 
     ArrayList<String> decryptionTime = new ArrayList<String>(); 
     ArrayList<String> encryptionLoad = new ArrayList<String>(); 
     ArrayList<String> decryptionLoad = new ArrayList<String>();
-    XYChart.Series series = new XYChart.Series();
+    XYChart.Series series1;
+    XYChart.Series series;
     CategoryAxis xAxis = new CategoryAxis();
     NumberAxis yAxis = new NumberAxis();
+    
     
     float encTime;
     float decTime;
@@ -112,10 +114,10 @@ public class FXMLDocumentController implements Initializable {
         cmbFile.getItems().addAll("1Kb", "10Kb", "100Kb","1000Kb");
         
         cmbAlgorithm.getItems().removeAll(cmbAlgorithm.getItems());
-        cmbAlgorithm.getItems().addAll("AES", "DES", "RSA");
+        cmbAlgorithm.getItems().addAll("AES", "DES", "RSA","");
+       
         
-        cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
-        cmbKeySize.getItems().addAll("128", "192", "256");
+        
     }    
 
     @FXML
@@ -212,10 +214,15 @@ public class FXMLDocumentController implements Initializable {
 
             long startTime = System.nanoTime();
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(128);
+            }
+            System.out.print(cmbKeySize.getValue());
             keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
             
             key = keyGenerator.generateKey();
-
+            
             // Generating IV.
             IV = new byte[16];
             SecureRandom random = new SecureRandom();
@@ -225,8 +232,23 @@ public class FXMLDocumentController implements Initializable {
             
             for(int i=0;i<40;i++) 
             {
-                encrypted = EncryptFile();
-                decrypted = DecryptFile();
+                encrypted = AESEncryptFile();
+                decrypted = AESDecryptFile();
+                encryptionTime.add(String.valueOf(AES.encryptionTime));
+                decryptionTime.add(String.valueOf(AES.decryptionTime));
+                
+                encryptionLoad.add(String.valueOf(AES.encryptionCpuLoad));
+                decryptionLoad.add(String.valueOf(AES.decryptionCpuLoad));
+            }
+            encryptionTime.clear();
+            decryptionTime.clear();
+            encryptionLoad.clear();
+            decryptionLoad.clear();
+                 
+            for(int i=0;i<40;i++) 
+            {
+                encrypted = AESEncryptFile();
+                decrypted = AESDecryptFile();
                 encryptionTime.add(String.valueOf(AES.encryptionTime));
                 decryptionTime.add(String.valueOf(AES.decryptionTime));
                 
@@ -272,37 +294,150 @@ public class FXMLDocumentController implements Initializable {
         pieChart.setAnimated(true);
         pieChart.setData(pieChartData);
         
-        barChart.getData().clear();
-        series.getData().clear();
-        
-        xAxis.setLabel("Algorithm Type");
+        if(onceaes){
+            series1 = new XYChart.Series();
+            series1.getData().clear();
+            series1.setName("AES");
+            onceaes = false;
+        }
         yAxis.setLabel("Time (µs)");
-        series.setName("Encryption Time");
-        series.getData().add(new XYChart.Data<>("AES",round(encTime,2)));
-       barChart.getData().clear();
-        barChart.getData().add(series);
+        series1.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        barChart.getData().add(series1);
+       
         
         }
+        else if(AlgorithmModel == "DES")
+        {
+            encryptionSum = 0;
+            decryptionSum = 0;
+            encLoadSum = 0;
+            decLoadSum = 0;
+            System.out.println("ne unaze");
+             
+
+            long startTime = System.nanoTime();
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+            keyGenerator.init(56);
+            
+            key = keyGenerator.generateKey();
+
+            // Generating IV.
+            IV = new byte[8];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(IV);
+            long endTime = System.nanoTime();
+            keyGeneration = (endTime - startTime)/(double)1000;
+            
+            for(int i=0;i<40;i++) 
+            {
+                encrypted = DESEncryptFile();
+                decrypted = DESDecryptFile();
+                encryptionTime.add(String.valueOf(DES.encryptionTime));
+                decryptionTime.add(String.valueOf(DES.decryptionTime));
+                
+                encryptionLoad.add(String.valueOf(DES.encryptionCpuLoad));
+                decryptionLoad.add(String.valueOf(DES.decryptionCpuLoad));
+            }
+            
+            for(int j=1;j<encryptionTime.size();j++)
+            {
+                encryptionSum += Double.parseDouble(encryptionTime.get(j));
+                decryptionSum += Double.parseDouble(decryptionTime.get(j));
+                encLoadSum += Double.parseDouble(encryptionLoad.get(j));
+                decLoadSum += Double.parseDouble(decryptionLoad.get(j));
+
+            }
+            
+            encTime = (float) (encryptionSum/encryptionTime.size()-1);
+            decTime = (float) (decryptionSum/encryptionTime.size()-1);
+            encLoad = (float) encLoadSum;
+            decLoad = (float) decLoadSum;
+            
+            
+            ObservableList<PieChart.Data> pieChartData = 
+                FXCollections.observableArrayList(
+                    new PieChart.Data("Generate Key", round(keyGeneration,2)),
+                    new PieChart.Data("EncryptTime", round(encTime,2)),
+                    new PieChart.Data("DecrypTime", round(decTime,2)),
+                    new PieChart.Data("EncrypLoad", round(encLoad,2)),
+                    new PieChart.Data("DecryptLoad", round(decLoad,2)));
+            
+            
+            
+            pieChartData.forEach(data ->
+                data.nameProperty().bind(
+                        Bindings.concat(
+                                data.getName(), " ", data.pieValueProperty(), " µs"
+                        )
+                )
+        );
+        pieChart.setLabelsVisible(false);
+        pieChart.setLegendSide(Side.BOTTOM);
+        
+        pieChart.setAnimated(true);
+        pieChart.setData(pieChartData);
+        
+      
+        if(oncedes){
+            series = new XYChart.Series();
+            series.getData().clear();
+            series.setName("DES");
+            oncedes = false;
+        }yAxis.setLabel("Time (µs)");
+        
+        series.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        barChart.getData().add(series);
+      
+        }
+        
     }
 
     @FXML
-    private void AlgorithmType(ActionEvent event) {
+    private void AlgorithmType(ActionEvent event) throws NoSuchAlgorithmException {
         AlgorithmModel = (String) cmbAlgorithm.getValue();
+        if(AlgorithmModel == "DES")
+        {
+            cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
+            cmbKeySize.getItems().addAll("56");
+            
+        }
+        else if(AlgorithmModel == "AES")
+        {
+            cmbKeySize.getItems().removeAll(cmbKeySize.getItems());
+            cmbKeySize.getItems().addAll("128", "192", "256");
+        }
+        
     }
     
     
-    private File EncryptFile()
+    private File AESEncryptFile()
     {
         File intpuFile = new File("textfile.txt");
         File outputFile = new File("encryptedfile.txt");
         AES.encrypt(intpuFile, outputFile, key,IV);
         return outputFile;
     }
-    private File DecryptFile()
+    private File AESDecryptFile()
     {
         File intpuFile = new File("encryptedfile.txt");
         File outputFile = new File("decryptedfile.txt"); 
         AES.decrypt(intpuFile, outputFile, key,IV);
+        return outputFile;
+
+    }
+    
+    private File DESEncryptFile()
+    {
+        File intpuFile = new File("textfile.txt");
+        File outputFile = new File("encryptedfile.txt");
+        DES.encrypt(intpuFile, outputFile, key,IV);
+        return outputFile;
+    }
+    private File DESDecryptFile()
+    {
+        File intpuFile = new File("encryptedfile.txt");
+        File outputFile = new File("decryptedfile.txt"); 
+        DES.decrypt(intpuFile, outputFile, key,IV);
         return outputFile;
 
     }

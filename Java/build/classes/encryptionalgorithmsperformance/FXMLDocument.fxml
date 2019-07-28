@@ -10,8 +10,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
@@ -80,7 +78,7 @@
                         <DropShadow height="14.0" radius="4.5" width="14.0" />
                      </effect>
                      <children>
-                        <BarChart fx:id="barChart" layoutY="45.0" prefHeight="354.0" prefWidth="395.0">
+                        <BarChart fx:id="barChart" layoutY="50.0" prefHeight="335.0" prefWidth="395.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>
@@ -147,11 +145,6 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Button>
-            <ImageView fitHeight="150.0" fitWidth="150.0" layoutX="24.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../encimage.png" />
-               </image>
-            </ImageView>
          </children>
       </AnchorPane>
       <Pane prefHeight="86.0" prefWidth="1084.0" style="-fx-background-color: #243a51;">
