@@ -88,6 +88,14 @@ public class FXMLDocumentController implements Initializable {
     float encLoad;
     float decLoad;
     String AlgorithmModel;
+    
+    ArrayList<Double> encryptionAlgorithmTime = new ArrayList<Double>();
+    ArrayList<Double> decryptionAlgorithmTime = new ArrayList<Double>();
+    ArrayList<Double> encLoadAlgorithmTime = new ArrayList<Double>();
+    ArrayList<Double> decLoadAlgorithmTime = new ArrayList<Double>();
+    ArrayList<Double> keyGenerationAlgorithmTime = new ArrayList<Double>();
+    
+    
     @FXML
     private Label lblGenFile;
     @FXML
@@ -104,6 +112,8 @@ public class FXMLDocumentController implements Initializable {
     private ComboBox cmbAlgorithm,cmbKeySize,cmbFile;
     @FXML
     private Button btnOther;
+    @FXML
+    private ComboBox cmbDataType;
    
     
     
@@ -132,6 +142,10 @@ public class FXMLDocumentController implements Initializable {
         cmbAlgorithm.getItems().removeAll(cmbAlgorithm.getItems());
         cmbAlgorithm.getItems().addAll("AES", "DES", "Blowfish","3DES","RC4");
         
+        cmbDataType.getItems().removeAll(cmbAlgorithm.getItems());
+        cmbDataType.getItems().addAll("Encryption Time", "Decryption Time", "Encryption Cpu Load","Decryption Cpu Load","Key Generation");
+        cmbDataType.getSelectionModel().select(0);
+        
         series = new XYChart.Series();
         series.setName("DES");
         
@@ -145,16 +159,24 @@ public class FXMLDocumentController implements Initializable {
         series3.setName("3DES");
         
         series4 = new XYChart.Series();
-        series4.setName("IDEA");
+        series4.setName("RC4");
         
-    
+        
         barChart.getData().add(series1);
         barChart.getData().add(series);
         barChart.getData().add(series2);
         barChart.getData().add(series3);
         barChart.getData().add(series4);
 
-       
+        for(int i=0;i<5;i++){
+            encryptionAlgorithmTime.add(i,0.0);
+            decryptionAlgorithmTime.add(i,0.0);
+            encLoadAlgorithmTime.add(i,0.0);
+            decLoadAlgorithmTime.add(i,0.0);
+            keyGenerationAlgorithmTime.add(i,0.0);
+
+            
+        }
         
         
     }    
@@ -306,7 +328,7 @@ public class FXMLDocumentController implements Initializable {
                     new PieChart.Data("EncrypLoad", round(encLoad,2)),
                     new PieChart.Data("DecryptLoad", round(decLoad,2)));
             
-            
+           
             
             pieChartData.forEach(data ->
                 data.nameProperty().bind(
@@ -328,9 +350,33 @@ public class FXMLDocumentController implements Initializable {
         }
         yAxis.setLabel("Time (µs)");
         
-        series1.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        encryptionAlgorithmTime.set(0, round(encTime,2));
+        decryptionAlgorithmTime.set(0, round(decTime,2));
+        encLoadAlgorithmTime.set(0, round(encLoad,2));
+        decLoadAlgorithmTime.set(0, round(decLoad,2));
+        keyGenerationAlgorithmTime.set(0, round(keyGeneration,2));
         
-       
+        if(cmbDataType.getValue() == "Encryption Time")
+        {
+             series1.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(0),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Time")
+        {
+             series1.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(0),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+             series1.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(0),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+             series1.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(0),2)));
+        }
+        else
+        {
+             series1.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(0),2)));
+        }
+        
         
         }
         else if(AlgorithmModel == "DES")
@@ -412,9 +458,35 @@ public class FXMLDocumentController implements Initializable {
         }
         yAxis.setLabel("Time (µs)");
         
-
-        series.getData().add(new XYChart.Data<>("",round(encTime,2)));
-      
+        encryptionAlgorithmTime.set(1, round(encTime,2));
+        decryptionAlgorithmTime.set(1, round(decTime,2));
+        encLoadAlgorithmTime.set(1, round(encLoad,2));
+        decLoadAlgorithmTime.set(1, round(decLoad,2));
+        keyGenerationAlgorithmTime.set(1, round(keyGeneration,2));
+        
+        if(cmbDataType.getValue() == "Encryption Time")
+        {
+             series.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Time")
+        {
+             series.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+             series.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+             series.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(1),2)));
+        }
+        else
+        {
+             series.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(1),2)));
+        }
+        
+        
+        
         }
         else if(AlgorithmModel == "Blowfish")
         {
@@ -422,7 +494,7 @@ public class FXMLDocumentController implements Initializable {
             decryptionSum = 0;
             encLoadSum = 0;
             decLoadSum = 0;
-            System.out.println("ne unaze");
+            System.out.println("ne unazeblow");
              
 
             long startTime = System.nanoTime();
@@ -499,8 +571,35 @@ public class FXMLDocumentController implements Initializable {
         
         yAxis.setLabel("Time (µs)");
         
-
-        series2.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        encryptionAlgorithmTime.set(2, round(encTime,2));
+        decryptionAlgorithmTime.set(2, round(decTime,2));
+        encLoadAlgorithmTime.set(2, round(encLoad,2));
+        decLoadAlgorithmTime.set(2, round(decLoad,2));
+        keyGenerationAlgorithmTime.set(2, round(keyGeneration,2));
+        
+        if(cmbDataType.getValue() == "Encryption Time")
+        {
+             series2.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(2),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Time")
+        {
+             series2.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(2),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+             series2.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(2),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+             series2.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(2),2)));
+        }
+        else
+        {
+             series2.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(2),2)));
+        }
+        
+        
+        
         }
         else if(AlgorithmModel == "3DES")
         {
@@ -587,8 +686,34 @@ public class FXMLDocumentController implements Initializable {
         }
         yAxis.setLabel("Time (µs)");
         
-
-        series3.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        encryptionAlgorithmTime.set(3, round(encTime,2));
+        decryptionAlgorithmTime.set(3, round(decTime,2));
+        encLoadAlgorithmTime.set(3, round(encLoad,2));
+        decLoadAlgorithmTime.set(3, round(decLoad,2));
+        keyGenerationAlgorithmTime.set(3, round(keyGeneration,2));
+        
+        if(cmbDataType.getValue() == "Encryption Time")
+        {
+             series3.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(3),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Time")
+        {
+             series3.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(3),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+             series3.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(3),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+             series3.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(3),2)));
+        }
+        else
+        {
+             series3.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(3),2)));
+        }
+        
+        
         }
         else if(AlgorithmModel == "RC4")
         {
@@ -675,8 +800,34 @@ public class FXMLDocumentController implements Initializable {
         }
         yAxis.setLabel("Time (µs)");
         
-
-        series4.getData().add(new XYChart.Data<>("",round(encTime,2)));
+        encryptionAlgorithmTime.set(4, round(encTime,2));
+        decryptionAlgorithmTime.set(4, round(decTime,2));
+        encLoadAlgorithmTime.set(4, round(encLoad,2));
+        decLoadAlgorithmTime.set(4, round(decLoad,2));
+        keyGenerationAlgorithmTime.set(4, round(keyGeneration,2));
+        
+        if(cmbDataType.getValue() == "Encryption Time")
+        {
+             series4.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(4),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Time")
+        {
+             series4.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(4),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+             series4.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(4),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+             series4.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(4),2)));
+        }
+        else
+        {
+             series4.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(4),2)));
+        }
+        
+        
         }
         
         
@@ -804,6 +955,84 @@ public class FXMLDocumentController implements Initializable {
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
+    }
+
+    @FXML
+    private void DataType(ActionEvent event) {
+        
+        if(cmbDataType.getValue() == "Decryption Time")
+        {
+            
+            
+             series4.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(4),2)));
+            
+             series1.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(0),2)));
+            
+             
+             series2.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(2),2)));
+            
+             series3.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(3),2)));
+            
+             series.getData().add(new XYChart.Data<>("",round(decryptionAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Encryption Time")
+        {
+            yAxis.setAutoRanging(false);
+            yAxis.setUpperBound(700);
+            series4.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(4),2)));
+            
+            series1.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(0),2)));
+
+
+            series2.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(2),2)));
+
+            series3.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(3),2)));
+
+            series.getData().add(new XYChart.Data<>("",round(encryptionAlgorithmTime.get(1),2)));
+        }
+        //"Encryption Time", "Decryption Time", "Encryption Cpu Load","Decryption CPU Load","Key Generation"
+        else if(cmbDataType.getValue() == "Encryption Cpu Load")
+        {
+            
+            series4.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(4),2)));
+            
+            series1.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(0),2)));
+
+
+            series2.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(2),2)));
+
+            series3.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(3),2)));
+
+            series.getData().add(new XYChart.Data<>("",round(encLoadAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Decryption Cpu Load")
+        {
+            
+            series4.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(4),2)));
+            
+            series1.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(0),2)));
+
+
+            series2.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(2),2)));
+
+            series3.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(3),2)));
+
+            series.getData().add(new XYChart.Data<>("",round(decLoadAlgorithmTime.get(1),2)));
+        }
+        else if(cmbDataType.getValue() == "Key Generation")
+        {
+            
+            series4.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(4),2)));
+            
+            series1.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(0),2)));
+
+
+            series2.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(2),2)));
+
+            series3.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(3),2)));
+
+            series.getData().add(new XYChart.Data<>("",round(keyGenerationAlgorithmTime.get(1),2)));
+        }
     }
     
 }
