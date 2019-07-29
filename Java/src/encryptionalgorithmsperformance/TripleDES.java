@@ -5,6 +5,10 @@
  */
 package encryptionalgorithmsperformance;
 
+/**
+ *
+ * @author USER
+ */
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,14 +24,14 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @author USER
  */
-public class AES {
+public class TripleDES {
     private static SecretKeySpec secretKey;
     private static byte[] key;
     static double encryptionTime;
     static double decryptionTime;
     static double encryptionCpuLoad;
     static double decryptionCpuLoad;
-    AES()
+    TripleDES()
     {
     	
     }
@@ -50,9 +54,9 @@ public class AES {
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
             long startTime = System.nanoTime();
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"AES");
-            
+            Cipher cipher = Cipher.getInstance("DESede");
+            SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"DESede");
+        
             cipher.init(Cipher.ENCRYPT_MODE, keySpec);
             
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -100,9 +104,9 @@ public class AES {
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
             long startTime = System.nanoTime(); 
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"AES");
-            
+            Cipher cipher = Cipher.getInstance("DESede");
+            SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"DESede");
+           
 
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
             

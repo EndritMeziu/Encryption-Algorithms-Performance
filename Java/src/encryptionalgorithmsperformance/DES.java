@@ -38,7 +38,7 @@ public class DES {
  
     
  
-    public static void encrypt(File inputFile,File outputFile, SecretKey key,byte[] IV)
+    public static void encrypt(File inputFile,File outputFile, SecretKey key)
     {
         
         try
@@ -54,10 +54,9 @@ public class DES {
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
             long startTime = System.nanoTime();
-            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"DES");
-            IvParameterSpec ivSpec = new IvParameterSpec(IV);
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec,ivSpec);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
             
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
@@ -88,7 +87,7 @@ public class DES {
         }
     }
  
-    public static void decrypt(File inputFile,File outputFile, SecretKey key,byte[] IV)	
+    public static void decrypt(File inputFile,File outputFile, SecretKey key)	
     {
         try
         {
@@ -103,11 +102,10 @@ public class DES {
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
             long startTime = System.nanoTime(); 
-            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"DES");
-            IvParameterSpec ivSpec = new IvParameterSpec(IV);
 
-            cipher.init(Cipher.DECRYPT_MODE, keySpec,ivSpec);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec);
             
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
