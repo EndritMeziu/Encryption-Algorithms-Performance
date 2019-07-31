@@ -47,6 +47,7 @@
             this.pnlFile = new System.Windows.Forms.Panel();
             this.cmbFile = new System.Windows.Forms.ComboBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.cmbGraphType = new System.Windows.Forms.ComboBox();
             this.pnlSideBar.SuspendLayout();
             this.panel3.SuspendLayout();
             this.pnlBarChart.SuspendLayout();
@@ -134,6 +135,7 @@
             // 
             this.pnlBarChart.BackColor = System.Drawing.Color.White;
             this.pnlBarChart.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlBarChart.Controls.Add(this.cmbGraphType);
             this.pnlBarChart.Controls.Add(this.pieChart2);
             this.pnlBarChart.Location = new System.Drawing.Point(655, 355);
             this.pnlBarChart.Name = "pnlBarChart";
@@ -144,9 +146,9 @@
             // 
             this.pieChart2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.pieChart2.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.pieChart2.Location = new System.Drawing.Point(47, 52);
+            this.pieChart2.Location = new System.Drawing.Point(3, 52);
             this.pieChart2.Name = "pieChart2";
-            this.pieChart2.Size = new System.Drawing.Size(322, 312);
+            this.pieChart2.Size = new System.Drawing.Size(395, 326);
             this.pieChart2.TabIndex = 1;
             this.pieChart2.Text = "pieChart2";
             // 
@@ -240,6 +242,15 @@
             this.cmbFile.TabIndex = 0;
             this.cmbFile.SelectedIndexChanged += new System.EventHandler(this.cmbFile_SelectedIndexChanged);
             // 
+            // cmbGraphType
+            // 
+            this.cmbGraphType.FormattingEnabled = true;
+            this.cmbGraphType.Location = new System.Drawing.Point(125, 22);
+            this.cmbGraphType.Name = "cmbGraphType";
+            this.cmbGraphType.Size = new System.Drawing.Size(154, 24);
+            this.cmbGraphType.TabIndex = 1;
+            this.cmbGraphType.SelectedIndexChanged += new System.EventHandler(this.cmbGraphType_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -282,6 +293,7 @@
         private LiveCharts.WinForms.PieChart pieChart1;
         private LiveCharts.WinForms.PieChart pieChart2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cmbGraphType;
     }
 }
 

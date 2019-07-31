@@ -3,6 +3,7 @@ using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,7 +22,16 @@ namespace EncryptionAlgorithmsPerformance
         double encryptionSum;
         double decryptionSum;
         double pct;
+
+        ArrayList list_name = new ArrayList();
+        double[] encryptionAlgorithmTime = new double[5];
+        double[] decryptionAlgorithmTime = new double[5];
+        double[] encLoadAlgorithmTime = new double[5];
+        double[] decLoadAlgorithmTime = new double[5];
+        double[] keyGenerationAlgorithmTime = new double[5];
         
+        
+
 
 
         public Form1()
@@ -41,7 +51,25 @@ namespace EncryptionAlgorithmsPerformance
             cmbAlgorithm.Items.Add("Blowfish");
             cmbAlgorithm.Items.Add("RC4");
 
+            cmbGraphType.Items.Add("Encryption Time");
+            cmbGraphType.Items.Add("Decryption Time");
+            cmbGraphType.Items.Add("Key Generation");
+            cmbGraphType.Items.Add("Encryption Cpu Load");
+            cmbGraphType.Items.Add("Decryption Cpu Load");
+
+            cmbGraphType.SelectedItem = cmbGraphType.Items[0];
+
+            for(int i=0;i<5;i++)
+            {
+                encLoadAlgorithmTime[i] = 0.0;
+                decLoadAlgorithmTime[i] = 0.0;
+                encryptionAlgorithmTime[i] = 0.0;
+                keyGenerationAlgorithmTime[i] = 0.0;
+                decryptionAlgorithmTime[i] = 0.0;
+
+            }
             
+
 
         }
         Func<ChartPoint, string> labelPoint = chartpoint => string.Format("{0} ({1:P}", chartpoint.Y, chartpoint.Participation);
@@ -257,6 +285,12 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration = (timedone - timestart)/100;
                 keyGeneration /= 100;
                 keyGeneration /= 4;
+
+                encryptionAlgorithmTime[0] = encTime;
+                decryptionAlgorithmTime[0] = decTime;
+                keyGenerationAlgorithmTime[0] = keyGeneration;
+                encLoadAlgorithmTime[0] = pct;
+                decLoadAlgorithmTime[0] = pct;
                 pieChart1.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -292,7 +326,43 @@ namespace EncryptionAlgorithmsPerformance
 
                 };
                 pieChart1.LegendLocation = LegendLocation.Bottom;
-               
+
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+
             }
             else if(cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "DES")
             {
@@ -336,6 +406,12 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration = (timedone - timestart) / 100;
                 keyGeneration /= 100;
                 keyGeneration /= 4;
+
+                encryptionAlgorithmTime[1] = encTime;
+                decryptionAlgorithmTime[1] = decTime;
+                keyGenerationAlgorithmTime[1] = keyGeneration;
+                encLoadAlgorithmTime[1] = pct;
+                decLoadAlgorithmTime[1] = pct;
                 pieChart1.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -371,6 +447,42 @@ namespace EncryptionAlgorithmsPerformance
 
                 };
                 pieChart1.LegendLocation = LegendLocation.Bottom;
+
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "3DES")
             {
@@ -414,6 +526,12 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration = (timedone - timestart) / 100;
                 keyGeneration /= 100;
                 keyGeneration /= 4;
+
+                encryptionAlgorithmTime[2] = encTime;
+                decryptionAlgorithmTime[2] = decTime;
+                keyGenerationAlgorithmTime[2] = keyGeneration;
+                encLoadAlgorithmTime[2] = pct;
+                decLoadAlgorithmTime[2] = pct;
                 pieChart1.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -449,6 +567,42 @@ namespace EncryptionAlgorithmsPerformance
 
                 };
                 pieChart1.LegendLocation = LegendLocation.Bottom;
+
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "Blowfish")
             {
@@ -576,6 +730,12 @@ namespace EncryptionAlgorithmsPerformance
                 decTime /= 100;
                 decTime /= 40;
 
+                encryptionAlgorithmTime[3] = encTime;
+                decryptionAlgorithmTime[3] = decTime;
+                keyGenerationAlgorithmTime[3] = keyGeneration;
+                encLoadAlgorithmTime[3] = pct;
+                decLoadAlgorithmTime[3] = pct;
+
                 pieChart1.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -611,6 +771,42 @@ namespace EncryptionAlgorithmsPerformance
 
                 };
                 pieChart1.LegendLocation = LegendLocation.Bottom;
+
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
 
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "RC4")
@@ -655,6 +851,13 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration = (timedone - timestart) / 100;
                 keyGeneration /= 100;
                 keyGeneration /= 4;
+
+                encryptionAlgorithmTime[4] = encTime;
+                decryptionAlgorithmTime[4] = decTime;
+                keyGenerationAlgorithmTime[4] = keyGeneration;
+                encLoadAlgorithmTime[4] = pct;
+                decLoadAlgorithmTime[4] = pct;
+
                 pieChart1.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -691,6 +894,42 @@ namespace EncryptionAlgorithmsPerformance
                 };
                 pieChart1.LegendLocation = LegendLocation.Bottom;
 
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+
 
 
             }
@@ -704,9 +943,199 @@ namespace EncryptionAlgorithmsPerformance
             return nano;
         }
 
+        private void cmbGraphType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Time")
+            {
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
 
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
 
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
 
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Time")
+            {
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+decryptionAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+decryptionAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+decryptionAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+decryptionAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+decryptionAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Cpu Load")
+            {
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+encLoadAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+encLoadAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+encLoadAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+encLoadAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+encLoadAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Cpu Load")
+            {
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+decLoadAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+decLoadAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+decLoadAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+decLoadAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+decLoadAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Key Generation")
+            {
+                pieChart2.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "AES: "+keyGenerationAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[0]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DES: "+keyGenerationAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[1]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "3DES: "+keyGenerationAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[2]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "Blowfish: "+keyGenerationAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[3]) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "RC4: "+keyGenerationAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[4]) },
+
+                    }
+
+                };
+                pieChart2.LegendLocation = LegendLocation.Bottom;
+            }
+        }
     }
     }
 
