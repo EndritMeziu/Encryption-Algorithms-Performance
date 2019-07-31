@@ -38,6 +38,7 @@
             this.pnlBarChart = new System.Windows.Forms.Panel();
             this.pieChart2 = new LiveCharts.WinForms.PieChart();
             this.pnlPieChart = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.pieChart1 = new LiveCharts.WinForms.PieChart();
             this.pnlKeySize = new System.Windows.Forms.Panel();
             this.cmbKeySize = new System.Windows.Forms.ComboBox();
@@ -46,7 +47,6 @@
             this.pnlFile = new System.Windows.Forms.Panel();
             this.cmbFile = new System.Windows.Forms.ComboBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.label1 = new System.Windows.Forms.Label();
             this.pnlSideBar.SuspendLayout();
             this.panel3.SuspendLayout();
             this.pnlBarChart.SuspendLayout();
@@ -161,11 +161,20 @@
             this.pnlPieChart.Size = new System.Drawing.Size(395, 399);
             this.pnlPieChart.TabIndex = 3;
             // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(3, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(140, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Encyption Results";
+            // 
             // pieChart1
             // 
             this.pieChart1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.pieChart1.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.pieChart1.Location = new System.Drawing.Point(-1, 52);
+            this.pieChart1.Location = new System.Drawing.Point(-5, 52);
             this.pieChart1.Name = "pieChart1";
             this.pieChart1.Size = new System.Drawing.Size(395, 326);
             this.pieChart1.TabIndex = 0;
@@ -230,15 +239,6 @@
             this.cmbFile.Size = new System.Drawing.Size(154, 24);
             this.cmbFile.TabIndex = 0;
             this.cmbFile.SelectedIndexChanged += new System.EventHandler(this.cmbFile_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Encyption Results";
             // 
             // Form1
             // 

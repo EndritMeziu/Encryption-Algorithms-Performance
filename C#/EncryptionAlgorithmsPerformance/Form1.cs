@@ -1,18 +1,15 @@
-﻿using LiveCharts;
+﻿using Elskom.Generic.Libs;
+using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace EncryptionAlgorithmsPerformance
 {
@@ -24,6 +21,8 @@ namespace EncryptionAlgorithmsPerformance
         double encryptionSum;
         double decryptionSum;
         double pct;
+        
+
 
         public Form1()
         {
@@ -42,10 +41,13 @@ namespace EncryptionAlgorithmsPerformance
             cmbAlgorithm.Items.Add("Blowfish");
             cmbAlgorithm.Items.Add("RC4");
 
+            
 
         }
         Func<ChartPoint, string> labelPoint = chartpoint => string.Format("{0} ({1:P}", chartpoint.Y, chartpoint.Participation);
-        
+
+
+       
         private void dropShadow(object sender, PaintEventArgs e)
         {
             Panel panel = (Panel)sender;
@@ -118,13 +120,13 @@ namespace EncryptionAlgorithmsPerformance
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "DES")
             {
                 cmbKeySize.Items.Clear();
-                cmbKeySize.Items.Add("56");   
+                cmbKeySize.Items.Add("64");   
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "3DES")
             {
                 cmbKeySize.Items.Clear();
-                cmbKeySize.Items.Add("112");
-                cmbKeySize.Items.Add("168");
+                cmbKeySize.Items.Add("128");
+                cmbKeySize.Items.Add("192");
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "Blowfish")
             {
@@ -220,7 +222,9 @@ namespace EncryptionAlgorithmsPerformance
                 double encTime, decTime;
                 encryptionSum = 0;
                 decryptionSum = 0;
-                AES.rijndael.KeySize = 128;
+                encryptionTime.Clear();
+                decryptionTime.Clear();
+                AES.rijndael.KeySize = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
 
 
                 long timestart = AES.nanoTime();
@@ -257,13 +261,13 @@ namespace EncryptionAlgorithmsPerformance
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+AES.encryptionTime+"(μs)",
+                        Title = "EncryptTime: "+encTime+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
                         
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+AES.decryptionTime+"(μs)",
+                        Title = "DecryptTime: "+decTime+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
                         
                     },
@@ -290,9 +294,417 @@ namespace EncryptionAlgorithmsPerformance
                 pieChart1.LegendLocation = LegendLocation.Bottom;
                
             }
+            else if(cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "DES")
+            {
+               
+                double encTime, decTime;
+                encryptionSum = 0;
+                decryptionSum = 0;
+                encryptionTime.Clear();
+                decryptionTime.Clear();
+                DES.objDes.KeySize = 64;
+
+
+                long timestart = DES.nanoTime();
+                for (int i = 0; i < 40; i++)
+                {
+                    DES.objDes.GenerateKey();
+                }
+                long timedone = DES.nanoTime();
+
+                PerformanceCounter myAppCpu =
+                new PerformanceCounter(
+                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                for (int i = 0; i < 40; i++)
+                {
+                    DES.encrypt();
+                    DES.decrypt();
+                    encryptionTime.Add(DES.encryptionTime);
+                    decryptionTime.Add(DES.decryptionTime);
+                }
+                pct = myAppCpu.NextValue();
+                for (int i = 0; i < 40; i++)
+                {
+                    encryptionSum += encryptionTime.ElementAt(i);
+                    decryptionSum += decryptionTime.ElementAt(i);
+                }
+
+                encTime = encryptionSum / 40;
+                decTime = decryptionSum / 40;
+
+
+                keyGeneration = (timedone - timestart) / 100;
+                keyGeneration /= 100;
+                keyGeneration /= 4;
+                pieChart1.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "EncryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    }
+
+                };
+                pieChart1.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "3DES")
+            {
+                double encTime, decTime;
+                encryptionSum = 0;
+                decryptionSum = 0;
+                encryptionTime.Clear();
+                decryptionTime.Clear();
+
+                TripleDes.tdes.KeySize = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
+
+
+                long timestart = TripleDes.nanoTime();
+                for (int i = 0; i < 40; i++)
+                {
+                    TripleDes.tdes.GenerateKey();
+                }
+                long timedone = TripleDes.nanoTime();
+
+                PerformanceCounter myAppCpu =
+                new PerformanceCounter(
+                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                for (int i = 0; i < 40; i++)
+                {
+                    TripleDes.encrypt();
+                    TripleDes.decrypt();
+                    encryptionTime.Add(TripleDes.encryptionTime);
+                    decryptionTime.Add(TripleDes.decryptionTime);
+                }
+                pct = myAppCpu.NextValue();
+                for (int i = 0; i < 40; i++)
+                {
+                    encryptionSum += encryptionTime.ElementAt(i);
+                    decryptionSum += decryptionTime.ElementAt(i);
+                }
+
+                encTime = encryptionSum / 40;
+                decTime = decryptionSum / 40;
+
+
+                keyGeneration = (timedone - timestart) / 100;
+                keyGeneration /= 100;
+                keyGeneration /= 4;
+                pieChart1.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "EncryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    }
+
+                };
+                pieChart1.LegendLocation = LegendLocation.Bottom;
+            }
+            else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "Blowfish")
+            {
+                double encTime, decTime;
+                encryptionSum = 0;
+                decryptionSum = 0;
+                encryptionTime.Clear();
+                decryptionTime.Clear();
+                BlowFish b;
+                if (cmbKeySize.GetItemText(cmbKeySize.SelectedItem) == "32")
+                {
+                    long startTimekey = nanoTime();
+                    byte[] key = new byte[4];
+                    for (int i = 0; i < 40; i++) {
+                        key[0] = 23;
+                        key[1] = 12;
+                        key[2] = 26;
+                        key[3] = 65;
+                       
+                    }
+                    b = new BlowFish(key);
+                    long endTimekey = nanoTime();
+                    keyGeneration = (endTimekey - startTimekey)/100;
+                    keyGeneration /= 10;
+                    keyGeneration /= 4;
+                    
+
+                }
+                else if(cmbKeySize.GetItemText(cmbKeySize.SelectedItem) == "128")  //256 448
+                {
+                    byte[] key = new byte[16];
+                    long startTimekey = nanoTime();
+                    for (int i = 0; i < 40; i++)
+                    {
+                        key[0] = 12; key[4] = 12; key[8] = 41;  key[12] = 32;
+                        key[1] = 8;  key[5] = 62; key[9] = 52;  key[13] = 12;
+                        key[2] = 42; key[6] = 22; key[10] = 9;  key[14] = 11;
+                        key[3] = 13; key[7] = 18; key[11] = 11; key[15] = 12;
+                    }
+                    b = new BlowFish(key);
+                    long endTimekey = nanoTime();
+                    keyGeneration = (endTimekey - startTimekey) / 100;
+                    keyGeneration /= 10;
+                    keyGeneration /= 4;
+                }
+                else if (cmbKeySize.GetItemText(cmbKeySize.SelectedItem) == "256")  //256 448
+                {
+                    byte[] key = new byte[32];
+                    long startTimekey = nanoTime();
+                    for (int i = 0; i < 40; i++)
+                    {
+                        key[0] = 12; key[4] = 12; key[8] = 41;  key[12] = 32;
+                        key[1] = 8;  key[5] = 62; key[9] = 52;  key[13] = 12;
+                        key[2] = 42; key[6] = 22; key[10] = 9;  key[14] = 11;
+                        key[3] = 13; key[7] = 18; key[11] = 11; key[15] = 12;
+
+                        key[16] = 12; key[20] = 12; key[24] = 41; key[28] = 32;
+                        key[17] = 8;  key[21] = 62; key[25] = 52; key[29] = 12;
+                        key[18] = 42; key[22] = 22; key[26] = 9;  key[30] = 11;
+                        key[19] = 13; key[23] = 18; key[27] = 11; key[31] = 12;
+                    }
+                    b = new BlowFish(key);
+                    long endTimekey = nanoTime();
+                    keyGeneration = (endTimekey - startTimekey) / 100;
+                    keyGeneration /= 10;
+                    keyGeneration /= 4;
+                }
+                else   
+                {
+                    byte[] key = new byte[56];
+                    long startTimekey = nanoTime();
+                    for (int i = 0; i < 40; i++)
+                    {
+                        key[0] = 12; key[4] = 12; key[8] = 41; key[12] = 32;
+                        key[1] = 8; key[5] = 62; key[9] = 52; key[13] = 12;
+                        key[2] = 42; key[6] = 22; key[10] = 9; key[14] = 11;
+                        key[3] = 13; key[7] = 18; key[11] = 11; key[15] = 12;
+
+                        key[16] = 12; key[20] = 12; key[24] = 41; key[28] = 32;
+                        key[17] = 8; key[21] = 62; key[25] = 52; key[29] = 12;
+                        key[18] = 42; key[22] = 22; key[26] = 9; key[30] = 11;
+                        key[19] = 13; key[23] = 18; key[27] = 11; key[31] = 12;
+
+                        key[32] = 42; key[34] = 22; key[36] = 9; key[38] = 11;
+                        key[33] = 13; key[35] = 18; key[37] = 11; key[39] = 12;
+
+                        key[40] = 12; key[44] = 12; key[48] = 41; key[52] = 32;
+                        key[41] = 8; key[45] = 62; key[49] = 52; key[53] = 12;
+                        key[42] = 42; key[46] = 22; key[50] = 9; key[54] = 11;
+                        key[43] = 13; key[47] = 18; key[51] = 11; key[55] = 12;
+                        
+                    }
+                    b = new BlowFish(key);
+                    long endTimekey = nanoTime();
+                    keyGeneration = (endTimekey - startTimekey) / 100;
+                    keyGeneration /= 10;
+                    keyGeneration /= 4;
+                }
+                long startTimeenc = nanoTime();
+                for (int i = 0; i < 40; i++)
+                {
+                    byte[] inputBytes = File.ReadAllBytes("textfile.txt");
+                    byte[] encryptedBytes = b.EncryptECB(inputBytes);
+                    FileStream fs = new FileStream("encryptedfile.txt", FileMode.Create, FileAccess.Write);
+                    fs.Write(encryptedBytes, 0, encryptedBytes.Length);
+                    fs.Close();
+                }
+                long endTimeenc = nanoTime();
+                encTime = (endTimeenc - startTimeenc) / 10;
+                encTime /= 100;
+                encTime /= 40;
+
+
+                long startTimedec = nanoTime();
+                for (int i = 0; i < 40; i++)
+                {
+                    byte[] inputBytes = File.ReadAllBytes("encryptedfile.txt");
+                    byte[] encryptedBytes = b.Decrypt(inputBytes, System.Security.Cryptography.CipherMode.ECB);
+                    FileStream fs = new FileStream("decryptedfile.txt", FileMode.Create, FileAccess.Write);
+                    fs.Write(encryptedBytes, 0, encryptedBytes.Length);
+                    fs.Close();
+                }
+                long endTimedec = nanoTime();
+                decTime = (endTimedec - startTimedec) / 10;
+                decTime /= 100;
+                decTime /= 40;
+
+                pieChart1.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "EncryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    }
+
+                };
+                pieChart1.LegendLocation = LegendLocation.Bottom;
+
+            }
+            else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "RC4")
+            {
+                double encTime, decTime;
+                ;
+                encryptionSum = 0;
+                decryptionSum = 0;
+                encryptionTime.Clear();
+                decryptionTime.Clear();
+                RC4.size = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
+
+
+                long timestart = RC4.nanoTime();
+                for (int i = 0; i < 40; i++)
+                {
+                    RC4.GenerateKey(RC4.size);
+                }
+                long timedone = RC4.nanoTime();
+
+                PerformanceCounter myAppCpu =
+                new PerformanceCounter(
+                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                for (int i = 0; i < 40; i++)
+                {
+                    RC4.Encrypt();
+                    RC4.Decrypt();
+                    encryptionTime.Add(RC4.encryptionTime);
+                    decryptionTime.Add(RC4.decryptionTime);
+                }
+                pct = myAppCpu.NextValue();
+                for (int i = 0; i < 40; i++)
+                {
+                    encryptionSum += encryptionTime.ElementAt(i);
+                    decryptionSum += decryptionTime.ElementAt(i);
+                }
+
+                encTime = encryptionSum / 40;
+                decTime = decryptionSum / 40;
+
+
+                keyGeneration = (timedone - timestart) / 100;
+                keyGeneration /= 100;
+                keyGeneration /= 4;
+                pieChart1.Series = new SeriesCollection
+                {
+                    new PieSeries
+                    {
+                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "EncryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    },
+                    new PieSeries
+                    {
+                        Title = "DecryptLoad: "+pct+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+
+                    }
+
+                };
+                pieChart1.LegendLocation = LegendLocation.Bottom;
+
+
+
+            }
         }
 
-       
+        public static long nanoTime()
+        {
+            long nano = 10000L * Stopwatch.GetTimestamp();
+            nano /= TimeSpan.TicksPerMillisecond;
+            nano *= 100L;
+            return nano;
+        }
+
+
 
 
     }

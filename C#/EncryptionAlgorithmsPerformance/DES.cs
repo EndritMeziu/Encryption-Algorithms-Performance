@@ -5,22 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace EncryptionAlgorithmsPerformance
 {
-    class AES
+    class DES
     {
-        public static AesManaged rijndael = new AesManaged();
-        private static System.Text.UnicodeEncoding unicodeEncoding = new UnicodeEncoding();
-        
+        public static DESCryptoServiceProvider objDes = new DESCryptoServiceProvider();
         public static double encryptionTime;
         public static double decryptionTime;
         public static double encryptionCpuLoad;
         public static double decryptionCpuLoad;
-       
-        AES()
+
+        DES()
         {
 
         }
@@ -30,13 +27,13 @@ namespace EncryptionAlgorithmsPerformance
         public static void encrypt()
         {
 
-            
-            long startTime = nanoTime();
-            ICryptoTransform encryptor = rijndael.CreateEncryptor();
-            rijndael.Padding = PaddingMode.Zeros;
-            rijndael.Mode = CipherMode.ECB;
 
-               
+            long startTime = nanoTime();
+            ICryptoTransform encryptor = objDes.CreateEncryptor();
+            objDes.Padding = PaddingMode.Zeros;
+            objDes.Mode = CipherMode.ECB;
+
+
             byte[] inputBytes = File.ReadAllBytes("textfile.txt");
             byte[] encryptedBytes = encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
 
@@ -45,13 +42,13 @@ namespace EncryptionAlgorithmsPerformance
             FileStream fs = new FileStream("encryptedfile.txt", FileMode.Create, FileAccess.Write);
             fs.Write(encryptedBytes, 0, encryptedBytes.Length);
             long endTime = nanoTime();
-            encryptionTime = (endTime - startTime)/10;
+            encryptionTime = (endTime - startTime) / 10;
             encryptionTime /= 100;
             fs.Close();
-            
-           
-            
-            
+
+
+
+
         }
 
         public static void decrypt()
@@ -59,9 +56,10 @@ namespace EncryptionAlgorithmsPerformance
 
 
             long startTime = nanoTime();
-            ICryptoTransform decryptor = rijndael.CreateDecryptor();
-            rijndael.Padding = PaddingMode.Zeros;
-            rijndael.Mode = CipherMode.ECB;
+            ICryptoTransform decryptor = objDes.CreateDecryptor();
+            objDes.Padding = PaddingMode.Zeros;
+            objDes.Mode = CipherMode.ECB;
+
 
 
             byte[] inputBytes = File.ReadAllBytes("encryptedfile.txt");
@@ -73,10 +71,10 @@ namespace EncryptionAlgorithmsPerformance
             fs.Write(decryptedBytes, 0, decryptedBytes.Length);
             long endTime = nanoTime();
 
-            decryptionTime = (endTime - startTime)/10;
+            decryptionTime = (endTime - startTime) / 10;
             decryptionTime /= 100;
             fs.Close();
-            
+
 
 
         }
@@ -89,6 +87,4 @@ namespace EncryptionAlgorithmsPerformance
         }
 
     }
-
-    
 }
