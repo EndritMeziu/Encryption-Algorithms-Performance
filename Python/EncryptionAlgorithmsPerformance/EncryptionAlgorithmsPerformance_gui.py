@@ -19,6 +19,13 @@ from Cryptodome.Util.Padding import pad, unpad
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
+values = [0, 0, 0, 0, 0]
+labels = ["EncrypTime", "DecrypTime", "KeyGeneration", "EncryptLoad", "DecryptLoad"]
+
+encval = [0,0,0,0,0]
+decval = [0,0,0,0,0]
+keygenval = [0,0,0,0,0]
+algLabels = ["AES","DES","3DES","Blowfish","RC4"]
 try:
     import Tkinter as tk
 
@@ -111,10 +118,45 @@ class Toplevel1:
 
         return key
 
+
+    def display_Graph(self,event):
+        paramLabels = ["","","","",""]
+
+
+        if(self.cmbResultType.get() == "DecryptTime"):
+            children = list(self.Frame4_6.children.values())
+            for child in children:
+                child.destroy()
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                paramLabels[i] += algLabels[i]+" " + str(decval[i]) + "μs"
+
+            ax2.pie(decval)
+            ax2.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+        elif(self.cmbResultType.get() == "KeyGeneration"):
+            children = list(self.Frame4_6.children.values())
+            for child in children:
+                child.destroy()
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                paramLabels[i] += algLabels[i]+" " + str(keygenval[i]) + "μs"
+
+            ax2.pie(keygenval)
+            ax2.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
     def display_Results(self, event):
-        values = [0, 0, 0, 0, 0]
-        labels = ["EncrypTime", "DecrypTime", "KeyGeneration", "EncryptLoad", "DecryptLoad"]
-        global once
+
+        paramLabels = ["","","","",""]
+        algParamLabels = ["","","","",""]
 
         if (self.cmbAlgorithm.get() == "AES"):
 
@@ -123,6 +165,12 @@ class Toplevel1:
             children = list(self.Frame4.children.values())
             for child in children:
                 child.destroy()
+
+            children2 = list(self.Frame4_6.children.values())
+            for child in children2:
+                child.destroy()
+
+            self.cmbResultType.current(0)
             timekey1 = time.time()
             # key generation
             for i in range(10000):
@@ -143,8 +191,7 @@ class Toplevel1:
                 time2 = time.time()
                 encsum += ((time2 * 1000000 - time1 * 1000000))
 
-            print(time1)
-            print(time2)
+
             out_file = open("encryptedfile.txt", "wb")
             out_file.write(encrypteddata)
             values[0] = (encsum / 10.0).__format__('.2f')
@@ -156,25 +203,40 @@ class Toplevel1:
                 for i in range(150):
                     decrypteddata = aes.encrypt(encrypteddata)
                 timedec2 = time.time()
-                decsum += ((time2 * 1000000 - time1 * 1000000))
+                decsum += ((timedec2 * 1000000 - timedec1 * 1000000))
             out_file.close()
             out_file = open("decryptedfile.txt", "wb")
             out_file.write(decrypteddata)
             out_file.close()
-            print(timedec1)
-            print(timedec2)
+
             values[1] = (decsum / 10.0).__format__('.2f')
 
+            #First graph
             fig = plt.Figure()
             canvas = FigureCanvasTkAgg(fig, self.Frame4)
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             ax = fig.add_subplot(111)
 
-            for i in range(3):
-                labels[i] += " " + str(values[i]) + "μs"
+            for i in range(5):
+                paramLabels[i] += labels[i] + " " + str(values[i]) + "μs"
 
             ax.pie(values)
-            ax.legend(labels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+            ax.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+            encval[0] = values[0]
+            decval[0] = values[1]
+            keygenval[0] = values[2]
+            #Second graph
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                algParamLabels[i] += algLabels[i]+" " + str(encval[i]) + "μs"
+
+            ax2.pie(encval)
+            ax2.legend(algParamLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
 
         elif (self.cmbAlgorithm.get() == "DES"):
             encsum = 0
@@ -217,16 +279,39 @@ class Toplevel1:
             children = list(self.Frame4.children.values())
             for child in children:
                 child.destroy()
+
+            children2 = list(self.Frame4_6.children.values())
+            for child in children2:
+                child.destroy()
+
+            self.cmbResultType.current(0)
+
             fig = plt.Figure()
             canvas = FigureCanvasTkAgg(fig, self.Frame4)
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             ax = fig.add_subplot(111)
 
-            for i in range(3):
-                labels[i] += " " + str(values[i]) + "μs"
+            for i in range(5):
+                paramLabels[i] += labels[i] + " " + str(values[i]) + "μs"
 
             ax.pie(values)
-            ax.legend(labels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+            ax.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+
+            encval[1] = values[0]
+            decval[1] = values[1]
+            keygenval[1] = values[2]
+            # Second graph
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                algParamLabels[i] += algLabels[i]+" " + str(encval[i]) + "μs"
+
+            ax2.pie(encval)
+            ax2.legend(algParamLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
 
         elif (self.cmbAlgorithm.get() == "3DES"):
             encsum = 0
@@ -234,6 +319,13 @@ class Toplevel1:
             children = list(self.Frame4.children.values())
             for child in children:
                 child.destroy()
+
+            children2 = list(self.Frame4_6.children.values())
+            for child in children2:
+                child.destroy()
+
+            self.cmbResultType.current(0)
+
             time1key = time.time()
             key = os.urandom(int(int(self.cmbKeySize.get()) / 8))
             time2key = time.time()
@@ -272,11 +364,26 @@ class Toplevel1:
 
             ax = fig.add_subplot(111)
 
-            for i in range(3):
-                labels[i] += " " + str(values[i]) + "μs"
+            for i in range(5):
+                paramLabels[i] += labels[i] + " " + str(values[i]) + "μs"
 
             ax.pie(values)
-            ax.legend(labels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+            ax.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+            encval[2] = values[0]
+            decval[2] = values[1]
+            keygenval[2] = values[2]
+            # Second graph
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                algParamLabels[i] += algLabels[i]+" " + str(encval[i]) + "μs"
+
+            ax2.pie(encval)
+            ax2.legend(algParamLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
 
         elif (self.cmbAlgorithm.get() == "Blowfish"):
             encsum = 0
@@ -284,6 +391,14 @@ class Toplevel1:
             children = list(self.Frame4.children.values())
             for child in children:
                 child.destroy()
+
+            children2 = list(self.Frame4_6.children.values())
+            for child in children2:
+                child.destroy()
+
+
+            self.cmbResultType.current(0)
+
             time1key = time.time()
             for i in range(100):
                 key = os.urandom(int(int(self.cmbKeySize.get()) / 8))
@@ -328,11 +443,26 @@ class Toplevel1:
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             ax = fig.add_subplot(111)
 
-            for i in range(3):
-                labels[i] += " " + str(values[i]) + "μs"
+            for i in range(5):
+                paramLabels[i] += labels[i] + " " + str(values[i]) + "μs"
 
             ax.pie(values)
-            ax.legend(labels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+            ax.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+            encval[3] = values[0]
+            decval[3] = values[1]
+            keygenval[3] = values[2]
+            # Second graph
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                algParamLabels[i] += algLabels[i]+" " + str(encval[i]) + "μs"
+
+            ax2.pie(encval)
+            ax2.legend(algParamLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
 
         elif (self.cmbAlgorithm.get() == "RC4"):
             encsum = 0
@@ -340,6 +470,13 @@ class Toplevel1:
             children = list(self.Frame4.children.values())
             for child in children:
                 child.destroy()
+
+            children2 = list(self.Frame4_6.children.values())
+            for child in children2:
+                child.destroy()
+
+            self.cmbResultType.current(0)
+
             time1key = time.time()
             for i in range(5000):
                 key = os.urandom(int(int(self.cmbKeySize.get()) / 8))
@@ -379,16 +516,30 @@ class Toplevel1:
             canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             ax = fig.add_subplot(111)
 
-            for i in range(3):
-                labels[i] += " " + str(values[i]) + "μs"
+            for i in range(5):
+                paramLabels[i] += labels[i] + " " + str(values[i]) + "μs"
 
             ax.pie(values)
-            ax.legend(labels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+            ax.legend(paramLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
+
+            encval[4] = values[0]
+            decval[4] = values[1]
+            keygenval[4] = values[2]
+            # Second graph
+            fig2 = plt.Figure()
+            canvas2 = FigureCanvasTkAgg(fig2, self.Frame4_6)
+            canvas2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(5):
+                algParamLabels[i] += algLabels[i]+" " + str(encval[i]) + "μs"
+
+            ax2.pie(encval)
+            ax2.legend(algParamLabels, bbox_to_anchor=(0.4, 0.15, 0.1, 0.1))
 
     def set_keySize(self, event):
         if (self.cmbAlgorithm.get() == "AES"):
             self.cmbKeySize['values'] = ("128", "192", "256")
-
         elif (self.cmbAlgorithm.get() == "DES"):
             self.cmbKeySize['values'] = ("64")
         elif (self.cmbAlgorithm.get() == "3DES"):
@@ -541,6 +692,22 @@ class Toplevel1:
         self.Frame4_6.configure(highlightthickness="2")
         self.Frame4_6.configure(width=125)
 
+        self.Frame4_7 = tk.Frame(top)
+        self.Frame4_7.place(relx=0.602, rely=0.456, relheight=0.075
+                            , relwidth=0.354)
+
+        self.Frame4_7.configure(borderwidth="0")
+        self.Frame4_7.configure(relief="raised")
+        self.Frame4_7.configure(background="#FFFFFF")
+        self.Frame4_7.configure(width=125)
+
+        self.cmbResultType = ttk.Combobox(self.Frame4_7)
+        self.cmbResultType.place(relx=0.305, rely=0.200, relheight=0.485
+                              , relwidth=0.375)
+        self.cmbResultType.configure(takefocus="")
+        self.cmbResultType.bind("<<ComboboxSelected>>", self.display_Graph)
+        self.cmbResultType['values'] = ("EncryptTime","DecryptTime","KeyGeneration")
+        self.cmbResultType.current(0)
         self.Frame4_1 = tk.Frame(self.Frame4_6)
         self.Frame4_1.place(relx=1.962, rely=1.015, relheight=1.0, relwidth=1.0)
         self.Frame4_1.configure(relief='raised')
