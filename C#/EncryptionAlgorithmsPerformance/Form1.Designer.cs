@@ -29,26 +29,33 @@
         private void InitializeComponent()
         {
             this.pnlSideBar = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnlTopBar = new System.Windows.Forms.Panel();
+            this.lblExit = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.panel9 = new System.Windows.Forms.Panel();
             this.pnlBarChart = new System.Windows.Forms.Panel();
-            this.pieChart2 = new LiveCharts.WinForms.PieChart();
             this.pnlPieChart = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.pieChart1 = new LiveCharts.WinForms.PieChart();
             this.pnlKeySize = new System.Windows.Forms.Panel();
             this.cmbKeySize = new System.Windows.Forms.ComboBox();
             this.pnlAlgorithm = new System.Windows.Forms.Panel();
             this.cmbAlgorithm = new System.Windows.Forms.ComboBox();
             this.pnlFile = new System.Windows.Forms.Panel();
             this.cmbFile = new System.Windows.Forms.ComboBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.cmbGraphType = new System.Windows.Forms.ComboBox();
+            this.pieChart2 = new LiveCharts.WinForms.PieChart();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pieChart1 = new LiveCharts.WinForms.PieChart();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.pieChart3 = new LiveCharts.WinForms.PieChart();
+            this.pieChart4 = new LiveCharts.WinForms.PieChart();
             this.pnlSideBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.pnlTopBar.SuspendLayout();
             this.panel3.SuspendLayout();
             this.pnlBarChart.SuspendLayout();
             this.pnlPieChart.SuspendLayout();
@@ -60,30 +67,65 @@
             // pnlSideBar
             // 
             this.pnlSideBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(58)))), ((int)(((byte)(81)))));
-            this.pnlSideBar.Controls.Add(this.button1);
+            this.pnlSideBar.Controls.Add(this.label3);
+            this.pnlSideBar.Controls.Add(this.label2);
+            this.pnlSideBar.Controls.Add(this.pictureBox1);
             this.pnlSideBar.Location = new System.Drawing.Point(3, 95);
             this.pnlSideBar.Name = "pnlSideBar";
             this.pnlSideBar.Size = new System.Drawing.Size(198, 686);
             this.pnlSideBar.TabIndex = 0;
             // 
-            // button1
+            // label3
             // 
-            this.button1.Location = new System.Drawing.Point(10, 204);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(178, 54);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label3.Location = new System.Drawing.Point(11, 595);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(176, 17);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Elektrike dhe Kompjuterike";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label2.Location = new System.Drawing.Point(11, 574);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(184, 17);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "FIEK - Fakulteti i Inxhinierise";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(26, 66);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(144, 134);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // pnlTopBar
             // 
             this.pnlTopBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(58)))), ((int)(((byte)(81)))));
+            this.pnlTopBar.Controls.Add(this.lblExit);
             this.pnlTopBar.Location = new System.Drawing.Point(3, 3);
             this.pnlTopBar.Margin = new System.Windows.Forms.Padding(0);
             this.pnlTopBar.Name = "pnlTopBar";
             this.pnlTopBar.Size = new System.Drawing.Size(1084, 86);
             this.pnlTopBar.TabIndex = 1;
+            // 
+            // lblExit
+            // 
+            this.lblExit.AutoSize = true;
+            this.lblExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblExit.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.lblExit.Location = new System.Drawing.Point(1038, 23);
+            this.lblExit.Name = "lblExit";
+            this.lblExit.Size = new System.Drawing.Size(23, 25);
+            this.lblExit.TabIndex = 0;
+            this.lblExit.Text = "x";
+            this.lblExit.Click += new System.EventHandler(this.lblExit_Click);
             // 
             // panel3
             // 
@@ -135,52 +177,21 @@
             // 
             this.pnlBarChart.BackColor = System.Drawing.Color.White;
             this.pnlBarChart.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlBarChart.Controls.Add(this.cmbGraphType);
-            this.pnlBarChart.Controls.Add(this.pieChart2);
+            this.pnlBarChart.Controls.Add(this.pieChart4);
             this.pnlBarChart.Location = new System.Drawing.Point(655, 355);
             this.pnlBarChart.Name = "pnlBarChart";
             this.pnlBarChart.Size = new System.Drawing.Size(395, 399);
             this.pnlBarChart.TabIndex = 4;
             // 
-            // pieChart2
-            // 
-            this.pieChart2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.pieChart2.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.pieChart2.Location = new System.Drawing.Point(3, 52);
-            this.pieChart2.Name = "pieChart2";
-            this.pieChart2.Size = new System.Drawing.Size(395, 326);
-            this.pieChart2.TabIndex = 1;
-            this.pieChart2.Text = "pieChart2";
-            // 
             // pnlPieChart
             // 
             this.pnlPieChart.BackColor = System.Drawing.Color.White;
             this.pnlPieChart.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlPieChart.Controls.Add(this.label1);
-            this.pnlPieChart.Controls.Add(this.pieChart1);
+            this.pnlPieChart.Controls.Add(this.pieChart3);
             this.pnlPieChart.Location = new System.Drawing.Point(240, 355);
             this.pnlPieChart.Name = "pnlPieChart";
             this.pnlPieChart.Size = new System.Drawing.Size(395, 399);
             this.pnlPieChart.TabIndex = 3;
-            // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Encyption Results";
-            // 
-            // pieChart1
-            // 
-            this.pieChart1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.pieChart1.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.pieChart1.Location = new System.Drawing.Point(-5, 52);
-            this.pieChart1.Name = "pieChart1";
-            this.pieChart1.Size = new System.Drawing.Size(395, 326);
-            this.pieChart1.TabIndex = 0;
-            this.pieChart1.Text = "pieChart1";
             // 
             // pnlKeySize
             // 
@@ -247,9 +258,54 @@
             this.cmbGraphType.FormattingEnabled = true;
             this.cmbGraphType.Location = new System.Drawing.Point(125, 22);
             this.cmbGraphType.Name = "cmbGraphType";
-            this.cmbGraphType.Size = new System.Drawing.Size(154, 24);
+            this.cmbGraphType.Size = new System.Drawing.Size(154, 25);
             this.cmbGraphType.TabIndex = 1;
             this.cmbGraphType.SelectedIndexChanged += new System.EventHandler(this.cmbGraphType_SelectedIndexChanged);
+            // 
+            // pieChart2
+            // 
+            this.pieChart2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.pieChart2.ImeMode = System.Windows.Forms.ImeMode.Alpha;
+            this.pieChart2.Location = new System.Drawing.Point(3, 52);
+            this.pieChart2.Name = "pieChart2";
+            this.pieChart2.Size = new System.Drawing.Size(395, 326);
+            this.pieChart2.TabIndex = 1;
+            this.pieChart2.Text = "pieChart2";
+            // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(3, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(140, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Encyption Results";
+            // 
+            // pieChart1
+            // 
+            this.pieChart1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.pieChart1.ImeMode = System.Windows.Forms.ImeMode.Alpha;
+            this.pieChart1.Location = new System.Drawing.Point(-5, 52);
+            this.pieChart1.Name = "pieChart1";
+            this.pieChart1.Size = new System.Drawing.Size(395, 326);
+            this.pieChart1.TabIndex = 0;
+            this.pieChart1.Text = "pieChart1";
+            // 
+            // pieChart3
+            // 
+            this.pieChart3.Location = new System.Drawing.Point(22, 38);
+            this.pieChart3.Name = "pieChart3";
+            this.pieChart3.Size = new System.Drawing.Size(353, 340);
+            this.pieChart3.TabIndex = 0;
+            this.pieChart3.Text = "pieChart3";
+            // 
+            // pieChart4
+            // 
+            this.pieChart4.Location = new System.Drawing.Point(20, 38);
+            this.pieChart4.Name = "pieChart4";
+            this.pieChart4.Size = new System.Drawing.Size(359, 340);
+            this.pieChart4.TabIndex = 0;
+            this.pieChart4.Text = "pieChart4";
             // 
             // Form1
             // 
@@ -262,6 +318,10 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.pnlSideBar.ResumeLayout(false);
+            this.pnlSideBar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.pnlTopBar.ResumeLayout(false);
+            this.pnlTopBar.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.pnlBarChart.ResumeLayout(false);
             this.pnlPieChart.ResumeLayout(false);
@@ -289,11 +349,16 @@
         private System.Windows.Forms.ComboBox cmbFile;
         private System.Windows.Forms.ComboBox cmbKeySize;
         private System.Windows.Forms.ComboBox cmbAlgorithm;
-        private System.Windows.Forms.Button button1;
         private LiveCharts.WinForms.PieChart pieChart1;
         private LiveCharts.WinForms.PieChart pieChart2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbGraphType;
+        private System.Windows.Forms.Label lblExit;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private LiveCharts.WinForms.PieChart pieChart4;
+        private LiveCharts.WinForms.PieChart pieChart3;
     }
 }
 

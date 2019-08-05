@@ -58,6 +58,8 @@ namespace EncryptionAlgorithmsPerformance
             cmbGraphType.Items.Add("Decryption Cpu Load");
 
             cmbGraphType.SelectedItem = cmbGraphType.Items[0];
+            pictureBox1.Image = Properties.Resources.encrypttt;
+           
 
             for(int i=0;i<5;i++)
             {
@@ -254,7 +256,7 @@ namespace EncryptionAlgorithmsPerformance
                 decryptionTime.Clear();
                 AES.rijndael.KeySize = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
 
-
+                
                 long timestart = AES.nanoTime();
                 for (int i = 0; i < 40; i++) { 
                     AES.rijndael.GenerateKey();
@@ -291,7 +293,8 @@ namespace EncryptionAlgorithmsPerformance
                 keyGenerationAlgorithmTime[0] = keyGeneration;
                 encLoadAlgorithmTime[0] = pct;
                 decLoadAlgorithmTime[0] = pct;
-                pieChart1.Series = new SeriesCollection
+                Console.WriteLine();
+                pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -325,9 +328,9 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart1.LegendLocation = LegendLocation.Bottom;
+                pieChart3.LegendLocation = LegendLocation.Bottom;
 
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -361,7 +364,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
 
             }
             else if(cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "DES")
@@ -412,7 +415,7 @@ namespace EncryptionAlgorithmsPerformance
                 keyGenerationAlgorithmTime[1] = keyGeneration;
                 encLoadAlgorithmTime[1] = pct;
                 decLoadAlgorithmTime[1] = pct;
-                pieChart1.Series = new SeriesCollection
+                pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -446,9 +449,9 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart1.LegendLocation = LegendLocation.Bottom;
+                pieChart3.LegendLocation = LegendLocation.Bottom;
 
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -482,7 +485,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "3DES")
             {
@@ -532,7 +535,7 @@ namespace EncryptionAlgorithmsPerformance
                 keyGenerationAlgorithmTime[2] = keyGeneration;
                 encLoadAlgorithmTime[2] = pct;
                 decLoadAlgorithmTime[2] = pct;
-                pieChart1.Series = new SeriesCollection
+                pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -566,9 +569,9 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart1.LegendLocation = LegendLocation.Bottom;
+                pieChart3.LegendLocation = LegendLocation.Bottom;
 
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -602,7 +605,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "Blowfish")
             {
@@ -736,7 +739,7 @@ namespace EncryptionAlgorithmsPerformance
                 encLoadAlgorithmTime[3] = pct;
                 decLoadAlgorithmTime[3] = pct;
 
-                pieChart1.Series = new SeriesCollection
+                pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -770,9 +773,9 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart1.LegendLocation = LegendLocation.Bottom;
+                pieChart3.LegendLocation = LegendLocation.Bottom;
 
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -806,7 +809,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
 
             }
             else if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "RC4")
@@ -858,7 +861,7 @@ namespace EncryptionAlgorithmsPerformance
                 encLoadAlgorithmTime[4] = pct;
                 decLoadAlgorithmTime[4] = pct;
 
-                pieChart1.Series = new SeriesCollection
+                pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -892,9 +895,9 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart1.LegendLocation = LegendLocation.Bottom;
+                pieChart3.LegendLocation = LegendLocation.Bottom;
 
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -928,7 +931,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
 
 
 
@@ -947,7 +950,7 @@ namespace EncryptionAlgorithmsPerformance
         {
             if(cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Time")
             {
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -981,11 +984,11 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Time")
             {
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -1019,11 +1022,11 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Cpu Load")
             {
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -1057,11 +1060,11 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Cpu Load")
             {
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -1095,11 +1098,11 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
             else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Key Generation")
             {
-                pieChart2.Series = new SeriesCollection
+                pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
@@ -1133,8 +1136,18 @@ namespace EncryptionAlgorithmsPerformance
                     }
 
                 };
-                pieChart2.LegendLocation = LegendLocation.Bottom;
+                pieChart4.LegendLocation = LegendLocation.Bottom;
             }
+        }
+
+        private void lblExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
     }

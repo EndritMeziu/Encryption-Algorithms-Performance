@@ -28,20 +28,21 @@ namespace EncryptionAlgorithmsPerformance
         {
 
 
-            long startTime = nanoTime();
+           
             ICryptoTransform encryptor = objDes.CreateEncryptor();
             objDes.Padding = PaddingMode.Zeros;
             objDes.Mode = CipherMode.ECB;
 
 
             byte[] inputBytes = File.ReadAllBytes("textfile.txt");
+            long startTime = nanoTime();
             byte[] encryptedBytes = encryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
 
 
-
+            long endTime = nanoTime();
             FileStream fs = new FileStream("encryptedfile.txt", FileMode.Create, FileAccess.Write);
             fs.Write(encryptedBytes, 0, encryptedBytes.Length);
-            long endTime = nanoTime();
+           
             encryptionTime = (endTime - startTime) / 10;
             encryptionTime /= 100;
             fs.Close();
@@ -55,7 +56,7 @@ namespace EncryptionAlgorithmsPerformance
         {
 
 
-            long startTime = nanoTime();
+            
             ICryptoTransform decryptor = objDes.CreateDecryptor();
             objDes.Padding = PaddingMode.Zeros;
             objDes.Mode = CipherMode.ECB;
@@ -63,13 +64,14 @@ namespace EncryptionAlgorithmsPerformance
 
 
             byte[] inputBytes = File.ReadAllBytes("encryptedfile.txt");
+            long startTime = nanoTime();
             byte[] decryptedBytes = decryptor.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
 
 
-
+            long endTime = nanoTime();
             FileStream fs = new FileStream("decryptedfile.txt", FileMode.Create, FileAccess.Write);
             fs.Write(decryptedBytes, 0, decryptedBytes.Length);
-            long endTime = nanoTime();
+            
 
             decryptionTime = (endTime - startTime) / 10;
             decryptionTime /= 100;

@@ -18,6 +18,8 @@ import Cryptodome.Cipher.Blowfish as Blowfish
 from Cryptodome.Util.Padding import pad, unpad
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from tkinter import *
+from PIL import Image as Oimage, ImageTk
 
 values = [0, 0, 0, 0, 0]
 labels = ["EncrypTime", "DecrypTime", "KeyGeneration", "EncryptLoad", "DecryptLoad"]
@@ -26,6 +28,7 @@ encval = [0,0,0,0,0]
 decval = [0,0,0,0,0]
 keygenval = [0,0,0,0,0]
 algLabels = ["AES","DES","3DES","Blowfish","RC4"]
+global photo
 try:
     import Tkinter as tk
 
@@ -583,6 +586,20 @@ class Toplevel1:
         self.Frame1.configure(highlightbackground="#d9d9d9")
         self.Frame1.configure(width=105)
 
+        img = Oimage.open('encrypttt.png')
+        img = img.resize((120,110),Oimage.ANTIALIAS)
+        self.photo = ImageTk.PhotoImage(img)
+
+        self.Canvas1 = tk.Canvas(self.Frame1,bd=0,highlightthickness=0)
+        self.Canvas1.place(relx=0.163, rely=0.119, relheight=0.170, relwidth = 0.850)
+        self.Canvas1.configure(background="#243a51")
+        self.Canvas1.configure(relief="ridge")
+        self.Canvas1.configure(width=143)
+        self.Canvas1.create_image(0,0,anchor=NW,image=self.photo)
+
+
+
+
         self.Frame2 = tk.Frame(top)
         self.Frame2.place(relx=0.0, rely=0.0, relheight=0.111, relwidth=1.0)
         self.Frame2.configure(relief='groove')
@@ -612,6 +629,7 @@ class Toplevel1:
         self.cmbFile['values'] = ("1Kb", "10Kb", "100Kb", "1000Kb")
         self.cmbFile.configure(takefocus="")
         self.cmbFile.bind("<<ComboboxSelected>>", self.generate_File)
+
 
         self.Frame3_3 = tk.Frame(top)
         self.Frame3_3.place(relx=0.747, rely=0.194, relheight=0.221
