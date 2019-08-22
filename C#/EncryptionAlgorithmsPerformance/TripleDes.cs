@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EncryptionAlgorithmsPerformance
 {
@@ -14,8 +11,7 @@ namespace EncryptionAlgorithmsPerformance
         public static TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider();
         public static double encryptionTime;
         public static double decryptionTime;
-        public static double encryptionCpuLoad;
-        public static double decryptionCpuLoad;
+       
 
         TripleDes()
         {
@@ -23,7 +19,7 @@ namespace EncryptionAlgorithmsPerformance
         }
 
 
-
+        //Enkriptimi permes 3DES
         public static void encrypt()
         {
 
@@ -51,6 +47,7 @@ namespace EncryptionAlgorithmsPerformance
 
         }
 
+        //Dekriptimi permes 3DES
         public static void decrypt()
         {
 

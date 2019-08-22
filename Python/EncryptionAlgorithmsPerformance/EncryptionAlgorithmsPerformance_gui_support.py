@@ -24,18 +24,20 @@ def set_Tk_var():
     global combobox
     combobox = tk.StringVar()
 
+#inicializimi i variablave primare
 def init(top, gui, *args, **kwargs):
     global w, top_level, root
     w = gui
     top_level = top
     root = top
 
+#funksioni i cili mbyll dritaren kryesore
 def destroy_window():
-    # Function which closes the window.
     global top_level
     top_level.destroy()
     top_level = None
 
+# main funksioni
 if __name__ == '__main__':
     import EncryptionAlgorithmsPerformance_gui
     EncryptionAlgorithmsPerformance_gui.vp_start_gui()

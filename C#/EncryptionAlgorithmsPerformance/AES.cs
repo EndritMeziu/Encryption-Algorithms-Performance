@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EncryptionAlgorithmsPerformance
 {
@@ -17,8 +13,6 @@ namespace EncryptionAlgorithmsPerformance
         
         public static double encryptionTime;
         public static double decryptionTime;
-        public static double encryptionCpuLoad;
-        public static double decryptionCpuLoad;
        
         AES()
         {
@@ -26,7 +20,7 @@ namespace EncryptionAlgorithmsPerformance
         }
 
 
-
+        //Enkriptimi permes AES
         public static void encrypt()
         {
 
@@ -54,6 +48,7 @@ namespace EncryptionAlgorithmsPerformance
             
         }
 
+        //Dekriptimit permes AES
         public static void decrypt()
         {
 
@@ -80,6 +75,8 @@ namespace EncryptionAlgorithmsPerformance
 
 
         }
+
+
         public static long nanoTime()
         {
             long nano = 10000L * Stopwatch.GetTimestamp();

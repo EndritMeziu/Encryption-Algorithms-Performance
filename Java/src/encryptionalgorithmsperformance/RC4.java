@@ -53,7 +53,6 @@ public class RC4 {
                 throw new AccessControlException("");
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
-            long startTime = System.nanoTime();
             Cipher cipher = Cipher.getInstance("RC4");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"RC4");
             
@@ -62,7 +61,7 @@ public class RC4 {
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
             inputStream.read(inputBytes);
-
+            long startTime = System.nanoTime();
             byte[] outputBytes = cipher.doFinal(inputBytes);
 
 
@@ -72,7 +71,7 @@ public class RC4 {
             inputStream.close();
             outputStream.close();
             long endthreadTime = newBean.getCurrentThreadCpuTime();
-            encryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(endTime - startTime);
+            encryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(1000000);
             encryptionTime = (endTime - startTime)/(double)1000;
 
             
@@ -103,7 +102,6 @@ public class RC4 {
                 throw new AccessControlException("");
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
-            long startTime = System.nanoTime(); 
             Cipher cipher = Cipher.getInstance("RC4");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"RC4");
             
@@ -113,7 +111,7 @@ public class RC4 {
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
             inputStream.read(inputBytes);
-
+            long startTime = System.nanoTime(); 
             byte[] outputBytes = cipher.doFinal(inputBytes);
 
 
@@ -121,7 +119,7 @@ public class RC4 {
             outputStream.write(outputBytes);
             long endTime = System.nanoTime();
             long endthreadTime = newBean.getCurrentThreadCpuTime()+1;
-            decryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(endTime - startTime);
+            decryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(1000000);
             decryptionTime = (endTime - startTime)/(double)1000;
      
 

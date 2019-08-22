@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EncryptionAlgorithmsPerformance
 {
@@ -13,9 +10,9 @@ namespace EncryptionAlgorithmsPerformance
     {
         public static double encryptionTime;
         public static double decryptionTime;
-        public static double encryptionCpuLoad;
-        public static double decryptionCpuLoad;
         public static int size;
+
+        //Gjenerimi i RC4 qelesit per enkriptim
         public static byte[] GenerateKey(int size)
         {
             byte[] key = new byte[size/8];
@@ -29,6 +26,7 @@ namespace EncryptionAlgorithmsPerformance
             return key;
         }
         
+        //Enkriptimi permes RC4
         public static void Encrypt()
         {
             byte[] key = GenerateKey(size);
@@ -46,8 +44,8 @@ namespace EncryptionAlgorithmsPerformance
             fs.Close();
 
         }
-        
 
+        //Dekriptimi permes RC4
         public static void Decrypt()
         {
             byte[] key = GenerateKey(size);
@@ -100,6 +98,7 @@ namespace EncryptionAlgorithmsPerformance
             });
         }
 
+        //Shkembimi i bajtave
         private static void Swap(byte[] s, int i, int j)
         {
             byte c = s[i];

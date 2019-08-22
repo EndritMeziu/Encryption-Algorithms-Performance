@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EncryptionAlgorithmsPerformance
 {
@@ -14,8 +11,6 @@ namespace EncryptionAlgorithmsPerformance
         public static DESCryptoServiceProvider objDes = new DESCryptoServiceProvider();
         public static double encryptionTime;
         public static double decryptionTime;
-        public static double encryptionCpuLoad;
-        public static double decryptionCpuLoad;
 
         DES()
         {
@@ -23,7 +18,7 @@ namespace EncryptionAlgorithmsPerformance
         }
 
 
-
+        //Enkriptimi permes DES
         public static void encrypt()
         {
 
@@ -52,6 +47,7 @@ namespace EncryptionAlgorithmsPerformance
 
         }
 
+        //Dekriptimi permes DES
         public static void decrypt()
         {
 

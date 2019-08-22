@@ -53,7 +53,7 @@ public class Blowfish {
                 throw new AccessControlException("");
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
-            long startTime = System.nanoTime();
+            
             Cipher cipher = Cipher.getInstance("Blowfish");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"Blowfish");
            
@@ -62,7 +62,8 @@ public class Blowfish {
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
             inputStream.read(inputBytes);
-
+            
+            long startTime = System.nanoTime();
             byte[] outputBytes = cipher.doFinal(inputBytes);
 
 
@@ -72,7 +73,7 @@ public class Blowfish {
             inputStream.close();
             outputStream.close();
             long endthreadTime = newBean.getCurrentThreadCpuTime();
-            encryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(endTime - startTime);
+            encryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(1000000);
             encryptionTime = (endTime - startTime)/(double)1000;
 
             
@@ -103,7 +104,6 @@ public class Blowfish {
                 throw new AccessControlException("");
             }
             long startThreadTime = newBean.getCurrentThreadCpuTime();
-            long startTime = System.nanoTime(); 
             Cipher cipher = Cipher.getInstance("Blowfish");
             SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(),"Blowfish");
             
@@ -112,7 +112,7 @@ public class Blowfish {
             FileInputStream inputStream = new FileInputStream(inputFile);
             byte[] inputBytes = new byte[(int) inputFile.length()];
             inputStream.read(inputBytes);
-
+            long startTime = System.nanoTime(); 
             byte[] outputBytes = cipher.doFinal(inputBytes);
 
 
@@ -120,7 +120,7 @@ public class Blowfish {
             outputStream.write(outputBytes);
             long endTime = System.nanoTime();
             long endthreadTime = newBean.getCurrentThreadCpuTime()+1;
-            decryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(endTime - startTime);
+            decryptionCpuLoad = (endthreadTime - startThreadTime) / (double)(1000000);
             decryptionTime = (endTime - startTime)/(double)1000;
      
 

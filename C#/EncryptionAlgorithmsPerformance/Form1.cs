@@ -9,19 +9,19 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 
 namespace EncryptionAlgorithmsPerformance
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form,IMessageFilter
     {
         double keyGeneration;
         List<double> encryptionTime = new List<double>();
         List<double> decryptionTime = new List<double>();
         double encryptionSum;
         double decryptionSum;
-        double pct;
 
         ArrayList list_name = new ArrayList();
         double[] encryptionAlgorithmTime = new double[5];
@@ -29,8 +29,31 @@ namespace EncryptionAlgorithmsPerformance
         double[] encLoadAlgorithmTime = new double[5];
         double[] decLoadAlgorithmTime = new double[5];
         double[] keyGenerationAlgorithmTime = new double[5];
-        
-        
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+        public const int WM_LBUTTONDOWN = 0x0201;
+
+        [DllImportAttribute("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImportAttribute("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        private HashSet<Control> controlsToMove = new HashSet<Control>();
+
+
+
+        public bool PreFilterMessage(ref Message m)
+        {
+            if (m.Msg == WM_LBUTTONDOWN &&
+                 controlsToMove.Contains(Control.FromHandle(m.HWnd)))
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+                return true;
+            }
+            return false;
+        }
 
 
 
@@ -40,6 +63,7 @@ namespace EncryptionAlgorithmsPerformance
 
             panel3.Paint += dropShadow;
 
+            //inicializimi i combobox elementeve me vlera fillestare
             cmbFile.Items.Add("1Kb");
             cmbFile.Items.Add("10Kb");
             cmbFile.Items.Add("100Kb");
@@ -51,33 +75,40 @@ namespace EncryptionAlgorithmsPerformance
             cmbAlgorithm.Items.Add("Blowfish");
             cmbAlgorithm.Items.Add("RC4");
 
-            cmbGraphType.Items.Add("Encryption Time");
-            cmbGraphType.Items.Add("Decryption Time");
-            cmbGraphType.Items.Add("Key Generation");
-            cmbGraphType.Items.Add("Encryption Cpu Load");
-            cmbGraphType.Items.Add("Decryption Cpu Load");
+            cmbGraphType1.Items.Add("Encryption Time");
+            cmbGraphType1.Items.Add("Decryption Time");
+            cmbGraphType1.Items.Add("Key Generation");
+            cmbGraphType1.Items.Add("Encryption Cpu Load");
+            cmbGraphType1.Items.Add("Decryption Cpu Load");
 
-            cmbGraphType.SelectedItem = cmbGraphType.Items[0];
+            cmbGraphType1.SelectedItem = cmbGraphType1.Items[0];
             pictureBox1.Image = Properties.Resources.encrypttt;
            
 
+            //vendosja e vlerave fillestare te atributeve 
+            //te performances ne 0.0
             for(int i=0;i<5;i++)
             {
-                encLoadAlgorithmTime[i] = 0.0;
-                decLoadAlgorithmTime[i] = 0.0;
-                encryptionAlgorithmTime[i] = 0.0;
-                keyGenerationAlgorithmTime[i] = 0.0;
-                decryptionAlgorithmTime[i] = 0.0;
+                encLoadAlgorithmTime[i] = 0.00;
+                decLoadAlgorithmTime[i] = 0.00;
+                encryptionAlgorithmTime[i] = 0.00;
+                keyGenerationAlgorithmTime[i] = 0.00;
+                decryptionAlgorithmTime[i] = 0.00;
 
             }
-            
+
+            Application.AddMessageFilter(this);
+
+            controlsToMove.Add(this);
+            controlsToMove.Add(this.pnlTopBar);
+
 
 
         }
         Func<ChartPoint, string> labelPoint = chartpoint => string.Format("{0} ({1:P}", chartpoint.Y, chartpoint.Participation);
 
 
-       
+        //Metoda per gjenerimin e dropshadow efektit rreth Panele-ve
         private void dropShadow(object sender, PaintEventArgs e)
         {
             Panel panel = (Panel)sender;
@@ -103,6 +134,7 @@ namespace EncryptionAlgorithmsPerformance
                 }
             }
         }
+
 
         private void pnlFile_Paint(object sender, PaintEventArgs e)
         {
@@ -138,6 +170,9 @@ namespace EncryptionAlgorithmsPerformance
 
         }
 
+        
+
+        //Mbushja e combobox-it cmbKeySize varesisht nga algoritmi i selektuar
         private void cmbAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "AES")
@@ -176,6 +211,7 @@ namespace EncryptionAlgorithmsPerformance
 
         }
 
+        //Gjenerimi i vektorit tekstual testues varesisht nga madhesia e specifikuar
         private void cmbFile_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(cmbFile.GetItemText(cmbFile.SelectedItem) == "1Kb")
@@ -193,6 +229,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
                 }
                 sw.Close();
+                lblFileText.Text = "1 Kb File Generated";
                 
             }
             else if (cmbFile.GetItemText(cmbFile.SelectedItem) == "10Kb")
@@ -210,6 +247,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
                 }
                 sw.Close();
+                lblFileText.Text = "10 Kb File Generated";
             }
             else if (cmbFile.GetItemText(cmbFile.SelectedItem) == "100Kb")
             {
@@ -226,6 +264,7 @@ namespace EncryptionAlgorithmsPerformance
                     }
                 }
                 sw.Close();
+                lblFileText.Text = "100 Kb File Generated";
             }
             else if (cmbFile.GetItemText(cmbFile.SelectedItem) == "1000Kb")
             {
@@ -242,9 +281,11 @@ namespace EncryptionAlgorithmsPerformance
                     }
                 }
                 sw.Close();
+                lblFileText.Text = "1000 Kb File Generated";
             }
         }
 
+        //Enkriptimi/Dekriptimi, llogaritje dhe gjenerimi i atributeve te performances
         private void cmbKeySize_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "AES")
@@ -256,24 +297,36 @@ namespace EncryptionAlgorithmsPerformance
                 decryptionTime.Clear();
                 AES.rijndael.KeySize = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
 
-                
+                //llogaritja e kohes se se gjenerimit te qelesit
                 long timestart = AES.nanoTime();
                 for (int i = 0; i < 40; i++) { 
                     AES.rijndael.GenerateKey();
                 }
                 long timedone = AES.nanoTime();
 
-                PerformanceCounter myAppCpu =
-                new PerformanceCounter(
-                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptimit
+                Process tmpprocess = Process.GetCurrentProcess();
+                double pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+
                 for (int i = 0; i < 40; i++)
                 {
                     AES.encrypt();
-                    AES.decrypt();
                     encryptionTime.Add(AES.encryptionTime);
+                }
+
+                double pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctenc = (pct2 - pct1) / 40.00;
+
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptimit
+                pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                for (int i = 0; i < 40; i++)
+                {
+                    AES.decrypt();
                     decryptionTime.Add(AES.decryptionTime);
                 }
-                pct = myAppCpu.NextValue();
+                pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctdec = (pct2 - pct1) / 40.00;
+
                 for (int i=0;i<40;i++)
                 {
                     encryptionSum += encryptionTime.ElementAt(i);
@@ -283,53 +336,56 @@ namespace EncryptionAlgorithmsPerformance
                 encTime = encryptionSum / 40;
                 decTime = decryptionSum / 40;
 
+                
 
                 keyGeneration = (timedone - timestart)/100;
                 keyGeneration /= 100;
                 keyGeneration /= 4;
 
+                //Vlerat e fituara te performances dhe gjenerimi i grafikave
                 encryptionAlgorithmTime[0] = encTime;
                 decryptionAlgorithmTime[0] = decTime;
                 keyGenerationAlgorithmTime[0] = keyGeneration;
-                encLoadAlgorithmTime[0] = pct;
-                decLoadAlgorithmTime[0] = pct;
+                encLoadAlgorithmTime[0] = pctenc * 100;
+                decLoadAlgorithmTime[0] = pctdec * 100;
                 Console.WriteLine();
                 pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Title = "EncryptTime: "+encryptionAlgorithmTime[0]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
                         
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Title = "DecryptTime: "+decryptionAlgorithmTime[0]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
                         
                     },
                     new PieSeries
                     {
-                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Title = "GenerateKey: "+keyGenerationAlgorithmTime[0]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
                         
                     },
                     new PieSeries
                     {
-                        Title = "EncryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "EncryptLoad: "+encLoadAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "DecryptLoad: "+decLoadAlgorithmTime[0]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[0]) },
 
                     }
 
                 };
                 pieChart3.LegendLocation = LegendLocation.Bottom;
-
+                
+                
                 pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
@@ -347,7 +403,7 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2] )},
 
                     },
                     new PieSeries
@@ -365,7 +421,8 @@ namespace EncryptionAlgorithmsPerformance
 
                 };
                 pieChart4.LegendLocation = LegendLocation.Bottom;
-
+                pieChart4.InnerRadius = 30;
+                
             }
             else if(cmbAlgorithm.GetItemText(cmbAlgorithm.SelectedItem) == "DES")
             {
@@ -377,7 +434,7 @@ namespace EncryptionAlgorithmsPerformance
                 decryptionTime.Clear();
                 DES.objDes.KeySize = 64;
 
-
+                //llogaritja e kohes se gjenerimit te qelesit
                 long timestart = DES.nanoTime();
                 for (int i = 0; i < 40; i++)
                 {
@@ -385,17 +442,26 @@ namespace EncryptionAlgorithmsPerformance
                 }
                 long timedone = DES.nanoTime();
 
-                PerformanceCounter myAppCpu =
-                new PerformanceCounter(
-                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptim
+                Process tmpprocess = Process.GetCurrentProcess();
+                double pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+
                 for (int i = 0; i < 40; i++)
                 {
                     DES.encrypt();
-                    DES.decrypt();
                     encryptionTime.Add(DES.encryptionTime);
+                }
+                double pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctenc = (pct2 - pct1) / 40.00;
+                //llogaritja e kohes se shfrytezimit te procesorit per dekriptim
+                pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                for (int i = 0; i < 40; i++)
+                {  
+                    DES.decrypt();
                     decryptionTime.Add(DES.decryptionTime);
                 }
-                pct = myAppCpu.NextValue();
+                pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctdec = (pct2 - pct1) / 40.00;
                 for (int i = 0; i < 40; i++)
                 {
                     encryptionSum += encryptionTime.ElementAt(i);
@@ -410,41 +476,42 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration /= 100;
                 keyGeneration /= 4;
 
+                //Vlerat e fituara te performances dhe gjenerimi i grafikave
                 encryptionAlgorithmTime[1] = encTime;
                 decryptionAlgorithmTime[1] = decTime;
-                keyGenerationAlgorithmTime[1] = keyGeneration;
-                encLoadAlgorithmTime[1] = pct;
-                decLoadAlgorithmTime[1] = pct;
+                keyGenerationAlgorithmTime[1] = keyGeneration ;
+                encLoadAlgorithmTime[1] = pctenc * 100;
+                decLoadAlgorithmTime[1] = pctdec * 100;
                 pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Title = "EncryptTime: "+encryptionAlgorithmTime[1]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Title = "DecryptTime: "+decryptionAlgorithmTime[1]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Title = "GenerateKey: "+keyGenerationAlgorithmTime[1]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
 
                     },
                     new PieSeries
                     {
-                        Title = "EncryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "EncryptLoad: "+encLoadAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[1]) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "DecryptLoad: "+decLoadAlgorithmTime[1]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[1]) },
 
                     }
 
@@ -474,7 +541,7 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[3])},
 
                     },
                     new PieSeries
@@ -497,25 +564,38 @@ namespace EncryptionAlgorithmsPerformance
 
                 TripleDes.tdes.KeySize = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
 
-
+                //llogaritja e kohes se gjenerimit te qelesit
                 long timestart = TripleDes.nanoTime();
                 for (int i = 0; i < 40; i++)
                 {
                     TripleDes.tdes.GenerateKey();
                 }
                 long timedone = TripleDes.nanoTime();
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptim
+                Process tmpprocess = Process.GetCurrentProcess();
+                double pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
 
-                PerformanceCounter myAppCpu =
-                new PerformanceCounter(
-                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
                 for (int i = 0; i < 40; i++)
                 {
                     TripleDes.encrypt();
-                    TripleDes.decrypt();
                     encryptionTime.Add(TripleDes.encryptionTime);
+                }
+
+                double pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctenc = (pct2 - pct1) / 40.00;
+
+                //llogaritja e kohes se shfrytezimit te procesorit per dekriptim
+                pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+
+                for (int i = 0; i < 40; i++)
+                {
+                    TripleDes.decrypt();
                     decryptionTime.Add(TripleDes.decryptionTime);
                 }
-                pct = myAppCpu.NextValue();
+
+                pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctdec = (pct2 - pct1) / 40.00;
+
                 for (int i = 0; i < 40; i++)
                 {
                     encryptionSum += encryptionTime.ElementAt(i);
@@ -530,41 +610,42 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration /= 100;
                 keyGeneration /= 4;
 
+                //Vlerat e fituara te performances dhe gjenerimi i grafikave
                 encryptionAlgorithmTime[2] = encTime;
                 decryptionAlgorithmTime[2] = decTime;
                 keyGenerationAlgorithmTime[2] = keyGeneration;
-                encLoadAlgorithmTime[2] = pct;
-                decLoadAlgorithmTime[2] = pct;
+                encLoadAlgorithmTime[2] = pctenc * 100;
+                decLoadAlgorithmTime[2] = pctdec * 100;
                 pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Title = "EncryptTime: "+encryptionAlgorithmTime[2]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Title = "DecryptTime: "+decryptionAlgorithmTime[2]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Title = "GenerateKey: "+keyGenerationAlgorithmTime[2]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
 
                     },
                     new PieSeries
                     {
-                        Title = "EncryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "EncryptLoad: "+encLoadAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[2]) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "DecryptLoad: "+decLoadAlgorithmTime[2]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[2]) },
 
                     }
 
@@ -576,31 +657,31 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[1]) },
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[2])},
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[4]) },
 
                     }
 
@@ -704,71 +785,88 @@ namespace EncryptionAlgorithmsPerformance
                     keyGeneration /= 10;
                     keyGeneration /= 4;
                 }
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptim
+                Process tmpprocess = Process.GetCurrentProcess();
+                double pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                byte[] inputBytes = File.ReadAllBytes("textfile.txt");
+                byte[] encryptedBytes = File.ReadAllBytes("textfile.txt");
                 long startTimeenc = nanoTime();
+                
                 for (int i = 0; i < 40; i++)
                 {
-                    byte[] inputBytes = File.ReadAllBytes("textfile.txt");
-                    byte[] encryptedBytes = b.EncryptECB(inputBytes);
-                    FileStream fs = new FileStream("encryptedfile.txt", FileMode.Create, FileAccess.Write);
-                    fs.Write(encryptedBytes, 0, encryptedBytes.Length);
-                    fs.Close();
+                    encryptedBytes = b.EncryptECB(inputBytes);
                 }
+                FileStream fs = new FileStream("encryptedfile.txt", FileMode.Create, FileAccess.Write);
+                fs.Write(encryptedBytes, 0, encryptedBytes.Length);
+                fs.Close();
                 long endTimeenc = nanoTime();
+                //llogaritja e kohes se shfrytezimit te procesorit per dekriptim
+                double pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctenc = (pct2 - pct1) / 40.00;
+                
                 encTime = (endTimeenc - startTimeenc) / 10;
                 encTime /= 100;
                 encTime /= 40;
 
-
+                inputBytes = File.ReadAllBytes("encryptedfile.txt");
+                pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
                 long startTimedec = nanoTime();
+                
                 for (int i = 0; i < 40; i++)
                 {
-                    byte[] inputBytes = File.ReadAllBytes("encryptedfile.txt");
-                    byte[] encryptedBytes = b.Decrypt(inputBytes, System.Security.Cryptography.CipherMode.ECB);
-                    FileStream fs = new FileStream("decryptedfile.txt", FileMode.Create, FileAccess.Write);
-                    fs.Write(encryptedBytes, 0, encryptedBytes.Length);
-                    fs.Close();
+                    
+                    encryptedBytes = b.Decrypt(inputBytes, System.Security.Cryptography.CipherMode.ECB);
+                    
                 }
+                fs = new FileStream("decryptedfile.txt", FileMode.Create, FileAccess.Write);
+                fs.Write(encryptedBytes, 0, encryptedBytes.Length);
+                fs.Close();
                 long endTimedec = nanoTime();
+                pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctdec = (pct2 - pct1) / 40.00;
+                
+
                 decTime = (endTimedec - startTimedec) / 10;
                 decTime /= 100;
                 decTime /= 40;
 
+                //Vlerat e fituara te performances dhe gjenerimi i grafikave
                 encryptionAlgorithmTime[3] = encTime;
                 decryptionAlgorithmTime[3] = decTime;
                 keyGenerationAlgorithmTime[3] = keyGeneration;
-                encLoadAlgorithmTime[3] = pct;
-                decLoadAlgorithmTime[3] = pct;
+                encLoadAlgorithmTime[3] = pctenc * 100;
+                decLoadAlgorithmTime[3] = pctdec * 100;
 
                 pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Title = "EncryptTime: "+encryptionAlgorithmTime[3]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Title = "DecryptTime: "+decryptionAlgorithmTime[3]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Title = "GenerateKey: "+keyGenerationAlgorithmTime[3]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
 
                     },
                     new PieSeries
                     {
-                        Title = "EncryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "EncryptLoad: "+encLoadAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "DecryptLoad: "+decLoadAlgorithmTime[3]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[3]) },
 
                     }
 
@@ -780,31 +878,31 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[0])},
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[1]) },
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[2])},
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[3])},
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( (encryptionAlgorithmTime[4])) },
 
                     }
 
@@ -822,25 +920,32 @@ namespace EncryptionAlgorithmsPerformance
                 decryptionTime.Clear();
                 RC4.size = Int32.Parse(cmbKeySize.GetItemText(cmbKeySize.SelectedItem));
 
-
+                //llogaritja e kohes se gjenerimit te qelesit
                 long timestart = RC4.nanoTime();
                 for (int i = 0; i < 40; i++)
                 {
                     RC4.GenerateKey(RC4.size);
                 }
                 long timedone = RC4.nanoTime();
-
-                PerformanceCounter myAppCpu =
-                new PerformanceCounter(
-                    "Process", "% Processor Time", "EncryptionAlgorithmsPerformance", true);
+                //llogaritja e kohes se shfrytezimit te procesorit per enkriptim
+                Process tmpprocess = Process.GetCurrentProcess();
+                double pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
                 for (int i = 0; i < 40; i++)
                 {
                     RC4.Encrypt();
-                    RC4.Decrypt();
                     encryptionTime.Add(RC4.encryptionTime);
+                }
+                double pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctenc = (pct2 - pct1) / 40.00;
+                //llogaritja e kohes se shfrytezimit te procesorit per dekriptim
+                pct1 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                for (int i = 0; i < 40; i++)
+                {
+                    RC4.Decrypt();
                     decryptionTime.Add(RC4.decryptionTime);
                 }
-                pct = myAppCpu.NextValue();
+                pct2 = tmpprocess.TotalProcessorTime.TotalMilliseconds;
+                double pctdec = (pct2 - pct1) / 40.00;
                 for (int i = 0; i < 40; i++)
                 {
                     encryptionSum += encryptionTime.ElementAt(i);
@@ -855,42 +960,43 @@ namespace EncryptionAlgorithmsPerformance
                 keyGeneration /= 100;
                 keyGeneration /= 4;
 
+                //Vlerat e fituara te performances dhe gjenerimi i grafikave
                 encryptionAlgorithmTime[4] = encTime;
                 decryptionAlgorithmTime[4] = decTime;
                 keyGenerationAlgorithmTime[4] = keyGeneration;
-                encLoadAlgorithmTime[4] = pct;
-                decLoadAlgorithmTime[4] = pct;
+                encLoadAlgorithmTime[4] = pctenc*100;
+                decLoadAlgorithmTime[4] = pctdec*100;
 
                 pieChart3.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
-                        Title = "EncryptTime: "+encTime+"(μs)",
+                        Title = "EncryptTime: "+encryptionAlgorithmTime[4]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(encTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptTime: "+decTime+"(μs)",
+                        Title = "DecryptTime: "+decryptionAlgorithmTime[4]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(decTime) },
 
                     },
                     new PieSeries
                     {
-                        Title = "GenerateKey: "+keyGeneration+"(μs)",
+                        Title = "GenerateKey: "+keyGenerationAlgorithmTime[4]+"(μs)",
                         Values = new ChartValues<ObservableValue> { new ObservableValue(keyGeneration) },
 
                     },
                     new PieSeries
                     {
-                        Title = "EncryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "EncryptLoad: "+encLoadAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[4]) },
 
                     },
                     new PieSeries
                     {
-                        Title = "DecryptLoad: "+pct+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(pct) },
+                        Title = "DecryptLoad: "+decLoadAlgorithmTime[4]+"(μs)",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[4]) },
 
                     }
 
@@ -902,25 +1008,25 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[1])},
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[2])},
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[3]) },
 
                     },
                     new PieSeries
@@ -938,6 +1044,7 @@ namespace EncryptionAlgorithmsPerformance
             }
         }
 
+        //metoda per kthimin e kohes ne nanosekonda
         public static long nanoTime()
         {
             long nano = 10000L * Stopwatch.GetTimestamp();
@@ -946,40 +1053,52 @@ namespace EncryptionAlgorithmsPerformance
             return nano;
         }
 
-        private void cmbGraphType_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbGraphType1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Time")
+            
+        }
+
+        //mbyllja e programit me klikim ne X label
+        private void lblExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        //Krahasimi i rezultateve mes algoritmeve te pershkruara
+        private void cmbGraphType1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Time")
             {
                 pieChart4.Series = new SeriesCollection
                 {
                     new PieSeries
                     {
                         Title = "AES: "+encryptionAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+encryptionAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[1])},
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+encryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[2]) },
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+encryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+encryptionAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encryptionAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encryptionAlgorithmTime[4]) },
 
                     }
 
@@ -993,25 +1112,25 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+decryptionAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decryptionAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+decryptionAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decryptionAlgorithmTime[1]) },
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+decryptionAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decryptionAlgorithmTime[2]) },
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+decryptionAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decryptionAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decryptionAlgorithmTime[3])},
 
                     },
                     new PieSeries
@@ -1031,7 +1150,7 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+encLoadAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encLoadAlgorithmTime[0]) },
 
                     },
                     new PieSeries
@@ -1043,19 +1162,19 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "3DES: "+encLoadAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encLoadAlgorithmTime[2]) },
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+encLoadAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encLoadAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+encLoadAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(encLoadAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( encLoadAlgorithmTime[4]) },
 
                     }
 
@@ -1069,31 +1188,31 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+decLoadAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decLoadAlgorithmTime[0]) },
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+decLoadAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decLoadAlgorithmTime[1]) },
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+decLoadAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decLoadAlgorithmTime[2]) },
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+decLoadAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decLoadAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+decLoadAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(decLoadAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( decLoadAlgorithmTime[4]) },
 
                     }
 
@@ -1107,31 +1226,31 @@ namespace EncryptionAlgorithmsPerformance
                     new PieSeries
                     {
                         Title = "AES: "+keyGenerationAlgorithmTime[0]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[0]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( keyGenerationAlgorithmTime[0])},
 
                     },
                     new PieSeries
                     {
                         Title = "DES: "+keyGenerationAlgorithmTime[1]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[1]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( keyGenerationAlgorithmTime[1])},
 
                     },
                     new PieSeries
                     {
                         Title = "3DES: "+keyGenerationAlgorithmTime[2]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[2]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( keyGenerationAlgorithmTime[2] )},
 
                     },
                     new PieSeries
                     {
                         Title = "Blowfish: "+keyGenerationAlgorithmTime[3]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[3]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( keyGenerationAlgorithmTime[3]) },
 
                     },
                     new PieSeries
                     {
                         Title = "RC4: "+keyGenerationAlgorithmTime[4]+"(μs)",
-                        Values = new ChartValues<ObservableValue> { new ObservableValue(keyGenerationAlgorithmTime[4]) },
+                        Values = new ChartValues<ObservableValue> { new ObservableValue( keyGenerationAlgorithmTime[4]) },
 
                     }
 
@@ -1140,15 +1259,13 @@ namespace EncryptionAlgorithmsPerformance
             }
         }
 
-        private void lblExit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
         {
 
         }
+
+        
+
     }
     }
 
