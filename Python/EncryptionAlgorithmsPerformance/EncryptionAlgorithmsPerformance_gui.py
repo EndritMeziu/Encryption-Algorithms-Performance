@@ -7,6 +7,8 @@
 import os
 import random
 import time
+import sys
+
 
 import matplotlib.pyplot as plt
 import Cryptodome.Cipher.DES as DES
@@ -57,9 +59,17 @@ import EncryptionAlgorithmsPerformance_gui_support
 def vp_start_gui():
     global val, w, root
     root = tk.Tk()
+
+    root.overrideredirect(1)
+    root.resizable(False, False)
+    root.columnconfigure(0, weight=1)
+    root.iconbitmap('icon.ico')
+
+
     EncryptionAlgorithmsPerformance_gui_support.set_Tk_var()
     top = Toplevel1(root)
     EncryptionAlgorithmsPerformance_gui_support.init(root, top)
+
     root.mainloop()
 
 
@@ -91,6 +101,8 @@ class Toplevel1:
         print("called")
         time.sleep(0.45)
         root.destroy()
+
+
 
     #gjenerimi i vektorit testues tekstual me madhesi te specifikuar
     def generate_File(self, event):
@@ -779,6 +791,7 @@ class Toplevel1:
         if sys.platform == "win32":
             self.style.theme_use('winnative')
 
+
         #vendosja e elementeve ne dritaren kyresore
         self.style.configure('.', background=_bgcolor)
         self.style.configure('.', foreground=_fgcolor)
@@ -825,6 +838,9 @@ class Toplevel1:
         self.Frame2.configure(highlightbackground="#d9d9d9")
         self.Frame2.configure(width=125)
 
+        self.Frame2.bind("<ButtonPress-1>", self.StartMove)
+        self.Frame2.bind("<ButtonRelease-1>", self.StopMove)
+        self.Frame2.bind("<B1-Motion>", self.OnMotion)
 
 
         self.Message1 = tk.Message(self.Frame2)
@@ -1036,6 +1052,20 @@ class Toplevel1:
         self.Frame5_8.configure(highlightthickness="1")
         self.Frame5_8.configure(width=105)
 
+    def StartMove(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def StopMove(self, event):
+        self.x = None
+        self.y = None
+
+    def OnMotion(self, event):
+        deltax = event.x - self.x
+        deltay = event.y - self.y
+        x = root.winfo_x() + deltax
+        y = root.winfo_y() + deltay
+        root.geometry("+%s+%s" % (x, y))
 
 if __name__ == '__main__':
     vp_start_gui()

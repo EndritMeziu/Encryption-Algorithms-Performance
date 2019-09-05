@@ -60,7 +60,10 @@ namespace EncryptionAlgorithmsPerformance
         public Form1()
         {
             InitializeComponent();
-
+            using (var stream = File.OpenRead("icon.ico"))
+            {
+                this.Icon = new Icon(stream);
+            }
             panel3.Paint += dropShadow;
 
             //inicializimi i combobox elementeve me vlera fillestare
@@ -140,21 +143,21 @@ namespace EncryptionAlgorithmsPerformance
         {
             Pen pen = new Pen(Color.FromArgb(100, 0, 0, 0));
 
-            e.Graphics.DrawLine(pen, 30, 100, 150, 100);
+            e.Graphics.DrawLine(pen, 50, 100, 190, 100);
         }
 
         private void pnlAlgorithm_Paint(object sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.FromArgb(100, 0, 0, 0));
 
-            e.Graphics.DrawLine(pen, 30, 100, 150, 100);
+            e.Graphics.DrawLine(pen, 50, 100, 190, 100);
         }
 
         private void pnlKeySize_Paint(object sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.FromArgb(100, 0, 0, 0));
 
-            e.Graphics.DrawLine(pen, 30, 100, 150, 100);
+            e.Graphics.DrawLine(pen, 50, 100, 190, 100);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -165,10 +168,7 @@ namespace EncryptionAlgorithmsPerformance
             
         }
 
-        private void elementHost1_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
-        {
-
-        }
+       
 
         
 
@@ -230,6 +230,7 @@ namespace EncryptionAlgorithmsPerformance
                 }
                 sw.Close();
                 lblFileText.Text = "1 Kb File Generated";
+                
                 
             }
             else if (cmbFile.GetItemText(cmbFile.SelectedItem) == "10Kb")
@@ -1067,7 +1068,7 @@ namespace EncryptionAlgorithmsPerformance
         //Krahasimi i rezultateve mes algoritmeve te pershkruara
         private void cmbGraphType1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Time")
+            if (cmbGraphType1.GetItemText(cmbGraphType1.SelectedItem) == "Encryption Time")
             {
                 pieChart4.Series = new SeriesCollection
                 {
@@ -1105,7 +1106,7 @@ namespace EncryptionAlgorithmsPerformance
                 };
                 pieChart4.LegendLocation = LegendLocation.Bottom;
             }
-            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Time")
+            else if (cmbGraphType1.GetItemText(cmbGraphType1.SelectedItem) == "Decryption Time")
             {
                 pieChart4.Series = new SeriesCollection
                 {
@@ -1143,7 +1144,7 @@ namespace EncryptionAlgorithmsPerformance
                 };
                 pieChart4.LegendLocation = LegendLocation.Bottom;
             }
-            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Encryption Cpu Load")
+            else if (cmbGraphType1.GetItemText(cmbGraphType1.SelectedItem) == "Encryption Cpu Load")
             {
                 pieChart4.Series = new SeriesCollection
                 {
@@ -1181,7 +1182,7 @@ namespace EncryptionAlgorithmsPerformance
                 };
                 pieChart4.LegendLocation = LegendLocation.Bottom;
             }
-            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Decryption Cpu Load")
+            else if (cmbGraphType1.GetItemText(cmbGraphType1.SelectedItem) == "Decryption Cpu Load")
             {
                 pieChart4.Series = new SeriesCollection
                 {
@@ -1219,7 +1220,7 @@ namespace EncryptionAlgorithmsPerformance
                 };
                 pieChart4.LegendLocation = LegendLocation.Bottom;
             }
-            else if (cmbGraphType.GetItemText(cmbGraphType.SelectedItem) == "Key Generation")
+            else if (cmbGraphType1.GetItemText(cmbGraphType1.SelectedItem) == "Key Generation")
             {
                 pieChart4.Series = new SeriesCollection
                 {
@@ -1259,10 +1260,6 @@ namespace EncryptionAlgorithmsPerformance
             }
         }
 
-        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         
 

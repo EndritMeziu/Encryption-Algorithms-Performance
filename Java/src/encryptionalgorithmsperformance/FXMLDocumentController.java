@@ -286,6 +286,21 @@ public class FXMLDocumentController implements Initializable {
             
             
             long endTime = System.nanoTime();
+            
+            
+            startTime = System.nanoTime();
+            keyGenerator = KeyGenerator.getInstance("AES");
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(128);
+            }
+            System.out.print(cmbKeySize.getValue());
+            keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
+            
+            key = keyGenerator.generateKey();
+            
+            
+            endTime = System.nanoTime();
             keyGeneration = (endTime - startTime)/(double)1000;
             encryptionTime.clear();
             decryptionTime.clear();
@@ -396,6 +411,15 @@ public class FXMLDocumentController implements Initializable {
 
             
             long endTime = System.nanoTime();
+            
+            startTime = System.nanoTime();
+            keyGenerator = KeyGenerator.getInstance("DES");
+            keyGenerator.init(56);
+            
+            key = keyGenerator.generateKey();
+
+            
+            endTime = System.nanoTime();
             keyGeneration = (endTime - startTime)/(double)1000;
             encryptionTime.clear();
             decryptionTime.clear();
@@ -511,6 +535,23 @@ public class FXMLDocumentController implements Initializable {
 
           
             long endTime = System.nanoTime();
+            
+            startTime = System.nanoTime();
+            keyGenerator = KeyGenerator.getInstance("Blowfish");
+            
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(32);
+            }
+            System.out.print(cmbKeySize.getValue());
+            keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
+            
+            key = keyGenerator.generateKey();
+
+          
+            endTime = System.nanoTime();
+            
+            
             keyGeneration = (endTime - startTime)/(double)1000;
             
             encryptionTime.clear();
@@ -624,6 +665,25 @@ public class FXMLDocumentController implements Initializable {
          
             
             long endTime = System.nanoTime();
+            
+            
+            startTime = System.nanoTime();
+            keyGenerator = KeyGenerator.getInstance("DESede");
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(112);
+            }
+            System.out.print(cmbKeySize.getValue());
+            keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
+            
+            key = keyGenerator.generateKey();
+
+         
+            
+            endTime = System.nanoTime();
+            
+            
+            
             keyGeneration = (endTime - startTime)/(double)1000;
             encryptionTime.clear();
             decryptionTime.clear();
@@ -735,9 +795,22 @@ public class FXMLDocumentController implements Initializable {
             
             key = keyGenerator.generateKey();
 
-         
-            
             long endTime = System.nanoTime();
+            
+            
+            startTime = System.nanoTime();
+            keyGenerator = KeyGenerator.getInstance("RC4");
+            if(cmbKeySize.getValue().equals("") || cmbKeySize.getValue().equals(null) ||
+                    cmbKeySize.getValue() == null || cmbKeySize.getValue() == ""){
+                keyGenerator.init(512);
+            }
+            System.out.print(cmbKeySize.getValue());
+            keyGenerator.init(Integer.parseInt(String.valueOf(cmbKeySize.getValue())));
+            
+            key = keyGenerator.generateKey();
+
+            endTime = System.nanoTime();
+            
             keyGeneration = (endTime - startTime)/(double)1000;
             encryptionTime.clear();
             decryptionTime.clear();

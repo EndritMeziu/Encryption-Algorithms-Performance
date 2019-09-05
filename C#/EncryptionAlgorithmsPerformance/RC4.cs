@@ -25,11 +25,13 @@ namespace EncryptionAlgorithmsPerformance
             }
             return key;
         }
-        
+
+        static byte[] key;
+
         //Enkriptimi permes RC4
         public static void Encrypt()
         {
-            byte[] key = GenerateKey(size);
+            key = GenerateKey(size);
             long startTime = nanoTime();
             byte[] inputBytes = File.ReadAllBytes("textfile.txt");
             byte[] encryptedBytes = EncryptOutput(key, inputBytes).ToArray();
@@ -48,7 +50,6 @@ namespace EncryptionAlgorithmsPerformance
         //Dekriptimi permes RC4
         public static void Decrypt()
         {
-            byte[] key = GenerateKey(size);
             long startTime = nanoTime();
             byte[] inputBytes = File.ReadAllBytes("encryptedfile.txt");
             byte[] decryptedBytes = EncryptOutput(key, inputBytes).ToArray();
